@@ -7,6 +7,7 @@ const port = process.env.PORT || 8000;
 import authRouter from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
 import productRouter from "./routes/productRoute.js";
+import blogRouter from "./routes/blogRoute.js";
 import morgan from "morgan";
 
 dbConnect();
@@ -18,6 +19,7 @@ app.use(cookieParser());
 
 app.use("/api/user", authRouter);
 app.use("/api/product", productRouter);
+app.use("/api/blog", blogRouter);
 
 app.listen(port, () => {
   console.log(`server is running at port ${port}`);

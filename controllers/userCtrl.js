@@ -3,6 +3,8 @@ import { generateRefreshToken } from "../config/refreshToken.js";
 import User from "../models/UserModel.js";
 import { validateMongoDBID } from "../utils/validatemongodbid.js";
 import jwt from "jsonwebtoken";
+import sendEmail from "./emailCtrl.js";
+import crypto from "crypto";
 
 // create a user
 const createUser = async (req, res) => {
@@ -211,9 +213,51 @@ const updatePassword = async (req, res) => {
   } else {
     res.json(user);
   }
+};
 
-}
+const forgotPasswordToken = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.json({ message: "User not found with this email" });
+  }
+  try {
+    const token = await user.createPasswordResetToken();
+    await user.save();
+    const resetUrl = `Hi, Please follow link to reset Your Password. This link is valid till 10 minutes from now. <a hre='http://localhost:5000/api/user/reset-password/${token}'>click here</a>`;
+    const data = {
+      to: email,
+      text: "Hey User",
+      subject: "Forgot Password Link",
+      html: resetUrl,
+    };
+    sendEmail(data);
+    res.json(token);
+  } catch (error) {
+    console.error("Error while creating password reset token: ", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+};
 
+const resetPassword = async (req, res) => {
+  const { password } = req.body;
+  const { token } = req.params;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: {
+      $gt: Date.now(),
+    },
+  });
+  if (!user) {
+    return res.json({ message: "Token expired! Please try again later" });
+  }
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  res.json(user);
+};
 export {
   createUser,
   loginUserCtrl,
@@ -225,5 +269,7 @@ export {
   blockUser,
   unblockUser,
   refreshToken,
-  updatePassword
+  updatePassword,
+  forgotPasswordToken,
+  resetPassword,
 };

@@ -1,10 +1,25 @@
 import express from "express";
 const router = express.Router();
-import { blockUser, createUser, deleteAUser, getAUser, getAllUser, loginUserCtrl, logout, refreshToken, unblockUser, updateAUser, updatePassword } from "../controllers/userCtrl.js";
+import {
+  blockUser,
+  createUser,
+  deleteAUser,
+  getAUser,
+  getAllUser,
+  loginUserCtrl,
+  logout,
+  refreshToken,
+  unblockUser,
+  updateAUser,
+  updatePassword,
+  forgotPasswordToken,
+  resetPassword,
+} from "../controllers/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middlewares/authmiddleware.js";
 
-
 router.post("/register", createUser);
+router.post("forgot-password-token", forgotPasswordToken);
+router.put("reset-password/:token", resetPassword);
 router.put("/password", authMiddleware, updatePassword);
 router.post("/login", loginUserCtrl);
 router.get("/all-users", getAllUser);
