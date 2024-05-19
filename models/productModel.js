@@ -50,12 +50,19 @@ var productSchema = new mongoose.Schema(
         star: {
           type: Number,
         },
+        comment: {
+          type: String
+        },
         postedBy: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
       },
     ],
+    totalRating: {
+      type: String,
+      default: "0"
+    }
   },
   { timestamps: true }
 );

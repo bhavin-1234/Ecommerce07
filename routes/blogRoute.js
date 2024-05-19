@@ -7,14 +7,16 @@ import {
   updateBlog,
   deleteBlog,
   likeBlog,
+  disLikeBlog
 } from "../controllers/blogCtrl.js";
 const router = express.Router();
 
-router.post("/", authMiddleware, isAdmin, createBlog);
-router.put("/:id", authMiddleware, isAdmin, updateBlog);
-router.get("/:id", getBlog);
 router.get("/", getAllBlog);
+router.get("/:id", getBlog);
+router.put("/like", authMiddleware, likeBlog);
+router.put("/dislike", authMiddleware, disLikeBlog);
+router.put("/:id", authMiddleware, isAdmin, updateBlog);
+router.post("/", authMiddleware, isAdmin, createBlog);
 router.delete("/:id", authMiddleware, isAdmin, deleteBlog);
-router.put("/likes", authMiddleware, isAdmin, likeBlog);
 
 export default router;

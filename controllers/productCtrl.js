@@ -1,5 +1,6 @@
-import Product from "../models/ProductModel.js";
 import slugify from "slugify";
+import User from "../models/UserModel.js";
+import Product from "../models/productModel.js";
 
 const createProduct = async (req, res) => {
   try {
@@ -107,10 +108,86 @@ const getAllProducts = async (req, res) => {
   }
 };
 
+const addToWishlist = async (req, res) => {
+  const { _id } = req.user;
+  const { productId } = req.body;
+  try {
+    const user = await User.findById(_id);
+    const alreadyAdded = user.wishlist.find((id) => id.toString() === productId);
+    if (alreadyAdded) {
+      let user = await User.findByIdAndUpdate(_id, {
+        $pull: { wishlist: productId }
+      }, { new: true });
+      res.json(user);
+    } else {
+      let user = await User.findByIdAndUpdate(_id, {
+        $push: { wishlist: productId }
+      }, { new: true });
+      res.json(user);
+    }
+  } catch (error) {
+    console.error("Error while wishlist the product: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const rating = async (req, res) => {
+  const { _id } = req.user;
+  const { star, productId, comment } = req.body;
+  try {
+    const product = await Product.findById(productId);
+    console.log("product:", product);
+    const alreadyRated = product.ratings.find(userId => userId.postedBy.toString() === _id.toString());
+    console.log(alreadyRated);
+    if (alreadyRated) {
+      await Product.updateOne(
+        {
+          ratings: { $elemMatch: alreadyRated },
+        },
+        {
+          $set: { "ratings.$.star": star, "ratings.$.comment": comment }
+        },
+        { new: true }
+      );
+    } else {
+      await Product.findByIdAndUpdate(productId, {
+        $push: {
+          ratings: {
+            star: star,
+            comment: comment,
+            postedBy: _id
+          }
+        }
+      }, { new: true });
+    }
+
+    const Ratedproduct = await Product.findById(productId);
+    const totalRatingGivers = Ratedproduct.ratings.length;
+    const ratingSum = Ratedproduct.ratings.map((item) => item.star).reduce((accum, current) => accum + current, 0);
+
+    let actualRating = 0;
+    if (totalRatingGivers !== 0) {
+      actualRating = Math.round(ratingSum / totalRatingGivers);
+    }
+    const stringRating = actualRating.toString();
+    const finalProduct = await Product.findByIdAndUpdate(productId, {
+      totalRating: stringRating
+    }, { new: true });
+    res.json(finalProduct);
+
+  } catch (error) {
+    console.error("Error while rate the product: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+
+}
+
 export {
   createProduct,
   getAProduct,
   getAllProducts,
   updateAProduct,
   deleteAProduct,
+  addToWishlist,
+  rating
 };

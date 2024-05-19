@@ -45,7 +45,7 @@ const getBlog = async (req, res) => {
         $inc: { numViews: 1 },
       },
       { new: true }
-    );
+    ).populate({ path: "likes", select: "-password" }).populate({ path: "likes", select: "-password" });
     res.json({
       status: "success",
       updateViews,
@@ -87,51 +87,108 @@ const deleteBlog = async (req, res) => {
 
 const likeBlog = async (req, res) => {
   const { blogId } = req.body;
-  validateMongoDBID(blogId);
-
-  // Find the blog which you want to be liked
-  const blog = await Blog.findById(blogId);
-  //   find the login user
   const loginUserId = req?.user?._id;
-  // find if the user has liked the blog
-  const isLiked = blog?.isLiked;
-  // find if the user has disliked the blog
-  const alreadyDisliked = blog?.disLikes?.find(
-    (userId) => userId?.toString() === loginUserId?.toString()
-  );
-  if (alreadyDisliked) {
-    const blog = await Blog.findByIdAndUpdate(
-      blogId,
-      {
-        $pull: { disLikes: loginUserId },
-        isDisLiked: false,
-      },
-      { new: true }
-    );
-    res.json(blog);
-  }
-    if (isLiked) {
-        const blog = await Blog.findByIdAndUpdate(
-            blogId,
-            {
-                $pull: { likes: loginUserId },
-                isLiked: false,
-            },
-            { new: true }
-        );
-        res.json(blog);
-    } else { 
-        const blog = await Blog.findByIdAndUpdate(
-            blogId,
-            {
-                $pull: { likes: loginUserId },
-                isLiked: true,
-            },
-            { new: true }
-        );
-        res.json(blog);
 
+  try {
+    validateMongoDBID(blogId);
+
+    // Find the blog which you want to be liked
+    let blog = await Blog.findById(blogId);
+    //   find the login user
+    // find if the user has liked the blog
+    const isLiked = blog?.isLiked;
+    // find if the user has disliked the blog
+    const alreadyDisliked = blog?.disLikes?.find(
+      (userId) => userId?.toString() === loginUserId?.toString()
+    );
+    if (alreadyDisliked) {
+      blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { disLikes: loginUserId },
+          isDisLiked: false,
+        },
+        { new: true }
+      );
     }
+    if (isLiked) {
+      blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { likes: loginUserId },
+          isLiked: false,
+        },
+        { new: true }
+      );
+    } else {
+      blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $push: { likes: loginUserId },
+          isLiked: true,
+        },
+        { new: true }
+      );
+    }
+    res.json(blog);
+  } catch (error) {
+    console.error("Error while like the Blog: ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+
 };
 
-export { createBlog, updateBlog, getBlog, getAllBlog, deleteBlog, likeBlog };
+const disLikeBlog = async (req, res) => {
+  const { blogId } = req.body;
+  const loginUserId = req?.user?._id;
+
+  try {
+    validateMongoDBID(blogId);
+
+    // Find the blog which you want to be liked
+    let blog = await Blog.findById(blogId);
+    //   find the login user
+    // find if the user has liked the blog
+    const isDisLiked = blog?.isDisLiked;
+    // find if the user has disliked the blog
+    const alreadyLiked = blog?.likes?.find(
+      (userId) => userId?.toString() === loginUserId?.toString()
+    );
+    if (alreadyLiked) {
+      blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { likes: loginUserId },
+          isLiked: false,
+        },
+        { new: true }
+      );
+    }
+    if (isDisLiked) {
+      blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $pull: { disLikes: loginUserId },
+          isDisLiked: false,
+        },
+        { new: true }
+      );
+    } else {
+      blog = await Blog.findByIdAndUpdate(
+        blogId,
+        {
+          $push: { disLikes: loginUserId },
+          isDisLiked: true,
+        },
+        { new: true }
+      );
+    }
+    res.json(blog);
+  } catch (error) {
+    console.error("Error while dilike the Blog: ", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+
+};
+
+export { createBlog, updateBlog, getBlog, getAllBlog, deleteBlog, likeBlog, disLikeBlog };
