@@ -1,7 +1,6 @@
-// import User from "../models/UserModel.js";
 import Blog from "../models/blogModel.js";
-import { validateMongoDBID } from "../utils/validatemongodbid.js";
-// import { validateMongoDBID } from "../utils/validatemongodbid.js";
+import cloudinaryUploadImg from "../utils/cloudinary.js";
+import { validateMongoDBID } from "../utils/validateMongoDBID.js";
 
 const createBlog = async (req, res) => {
   try {
@@ -45,7 +44,9 @@ const getBlog = async (req, res) => {
         $inc: { numViews: 1 },
       },
       { new: true }
-    ).populate({ path: "likes", select: "-password" }).populate({ path: "likes", select: "-password" });
+    )
+      .populate({ path: "likes", select: "-password" })
+      .populate({ path: "likes", select: "-password" });
     res.json({
       status: "success",
       updateViews,
@@ -135,7 +136,6 @@ const likeBlog = async (req, res) => {
     console.error("Error while like the Blog: ", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
-
 };
 
 const disLikeBlog = async (req, res) => {
@@ -188,7 +188,41 @@ const disLikeBlog = async (req, res) => {
     console.error("Error while dilike the Blog: ", error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
-
 };
 
-export { createBlog, updateBlog, getBlog, getAllBlog, deleteBlog, likeBlog, disLikeBlog };
+const uploadImages = async (req, res) => {
+  const { id } = req.params;
+  try {
+    validateMongoDBID(id);
+    const uploader = (path) => cloudinaryUploadImg(path, "images");
+    const urls = [];
+    const files = req.files;
+    for (const file of files) {
+      const { path } = file;
+      const newPath = await uploader(path);
+      urls.push(newPath);
+    }
+    const findBlog = await Blog.findByIdAndUpdate(
+      id,
+      {
+        images: urls.map((file) => file),
+      },
+      { new: true }
+    );
+    res.json(findBlog);
+  } catch (error) {
+    console.error("Error while uploading blog images: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export {
+  createBlog,
+  updateBlog,
+  getBlog,
+  getAllBlog,
+  deleteBlog,
+  likeBlog,
+  disLikeBlog,
+  uploadImages,
+};

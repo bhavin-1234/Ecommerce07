@@ -1,7 +1,7 @@
 import { generateToken } from "../config/jwtToken.js";
 import { generateRefreshToken } from "../config/refreshToken.js";
 import User from "../models/UserModel.js";
-import { validateMongoDBID } from "../utils/validatemongodbid.js";
+import { validateMongoDBID } from "../utils/validateMongoDBID.js";
 import jwt from "jsonwebtoken";
 import sendEmail from "./emailCtrl.js";
 import crypto from "crypto";
@@ -46,6 +46,40 @@ const loginUserCtrl = async (req, res) => {
       email: findUser?.email,
       mobile: findUser?.mobile,
       token: generateToken(findUser?._id),
+    });
+  } else {
+    res.json({ message: "Invalid Credential", success: false });
+  }
+};
+
+const loginAdmin = async (req, res) => {
+  const { email, password } = req.body;
+  const findAdmin = await User.findOne({ email });
+  if (findAdmin?.role !== "admin") {
+    return res.json({ message: "Not Authorised!!" });
+  }
+  if (findAdmin && (await findAdmin.isPasswordMatched(password))) {
+    const refreshToken = await generateRefreshToken(findAdmin?._id);
+    const updateUser = await User.findOneAndUpdate(
+      findAdmin?._id,
+      {
+        refreshToken,
+      },
+      {
+        new: true,
+      }
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000,
+    });
+    res.json({
+      id: findAdmin?._id,
+      firstname: findAdmin?.firstname,
+      lastname: findAdmin?.lastname,
+      email: findAdmin?.email,
+      mobile: findAdmin?.mobile,
+      token: generateToken(findAdmin?._id),
     });
   } else {
     res.json({ message: "Invalid Credential", success: false });
@@ -258,9 +292,55 @@ const resetPassword = async (req, res) => {
   await user.save();
   res.json(user);
 };
+
+// save user address
+
+const saveAddress = async (req, res) => {
+  const { _id } = req.user;
+  try {
+    validateMongoDBID(_id);
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        address: req?.body?.address,
+      },
+      { new: true }
+    );
+    res.json(updatedUser);
+  } catch (error) {
+    console.error("Error while updating a user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getWishList = async (req, res) => {
+  const { _id } = req.user;
+  try {
+    validateMongoDBID(_id);
+    const findUser = await User.findById(_id).populate("wishlist");
+    res.json(findUser);
+  } catch (error) {
+    console.error("Error while fetching wishlist items: ", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+};
+
+const userCart = async (req, res) => {
+  const { cart } = req.body;
+  const { _id } = req.user;
+  try {
+    validateMongoDBID(_id);
+    const user = await User.findById(_id);
+  } catch (error) {
+    console.error("Error while fetching wishlist items: ", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+};
+
 export {
   createUser,
   loginUserCtrl,
+  loginAdmin,
   getAllUser,
   getAUser,
   deleteAUser,
@@ -272,4 +352,7 @@ export {
   updatePassword,
   forgotPasswordToken,
   resetPassword,
+  getWishList,
+  saveAddress,
+  userCart,
 };

@@ -38,9 +38,7 @@ var productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    images: {
-      type: Array,
-    },
+    images: [],
     color: {
       type: String,
       required: true,
@@ -51,7 +49,7 @@ var productSchema = new mongoose.Schema(
           type: Number,
         },
         comment: {
-          type: String
+          type: String,
         },
         postedBy: {
           type: mongoose.Schema.Types.ObjectId,
@@ -61,8 +59,8 @@ var productSchema = new mongoose.Schema(
     ],
     totalRating: {
       type: String,
-      default: "0"
-    }
+      default: "0",
+    },
   },
   { timestamps: true }
 );
