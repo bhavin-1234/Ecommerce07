@@ -11,7 +11,9 @@ import blogRouter from "./routes/blogRoute.js";
 import productCategoryRouter from "./routes/productCategoryRoute.js";
 import blogCategoryRouter from "./routes/blogCategoryRoute.js";
 import brandRouter from "./routes/brandRoute.js";
+import colorRouter from "./routes/colorRoute.js";
 import couponRouter from "./routes/couponRoute.js";
+import enqRouter from "./routes/enqRoute.js";
 import morgan from "morgan";
 
 dbConnect();
@@ -28,6 +30,8 @@ app.use("/api/product-category", productCategoryRouter);
 app.use("/api/blog-category", blogCategoryRouter);
 app.use("/api/brand", brandRouter);
 app.use("/api/coupon", couponRouter);
+app.use("/api/color", colorRouter);
+app.use("/api/enquiry", enqRouter);
 
 app.listen(port, () => {
   console.log(`server is running at port ${port}`);

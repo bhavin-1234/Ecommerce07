@@ -1,5 +1,8 @@
 import Blog from "../models/blogModel.js";
-import cloudinaryUploadImg from "../utils/cloudinary.js";
+import {
+  cloudinaryUploadImg,
+  cloudinaryDeleteImg,
+} from "../utils/cloudinary.js";
 import { validateMongoDBID } from "../utils/validateMongoDBID.js";
 
 const createBlog = async (req, res) => {
@@ -202,16 +205,22 @@ const uploadImages = async (req, res) => {
       const newPath = await uploader(path);
       urls.push(newPath);
     }
-    const findBlog = await Blog.findByIdAndUpdate(
-      id,
-      {
-        images: urls.map((file) => file),
-      },
-      { new: true }
-    );
-    res.json(findBlog);
+    const images = urls.map((file) => file);
+    res.json(images);
   } catch (error) {
     console.error("Error while uploading blog images: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const deleteImages = async (req, res) => {
+  const { id } = req.params;
+  try {
+    validateMongoDBID(id);
+    const deleted = cloudinaryDeleteImg(id, "images");
+    res.json({ message: "Deleted" });
+  } catch (error) {
+    console.error("Error while deleting blog images: ", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -225,4 +234,5 @@ export {
   likeBlog,
   disLikeBlog,
   uploadImages,
+  deleteImages,
 };

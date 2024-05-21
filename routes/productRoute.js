@@ -4,6 +4,7 @@ import {
   addToWishlist,
   createProduct,
   deleteAProduct,
+  deleteImages,
   getAProduct,
   getAllProducts,
   rating,
@@ -18,7 +19,7 @@ router.get("/:id", getAProduct);
 router.put("/wishlist", authMiddleware, addToWishlist);
 router.put("/rating", authMiddleware, rating);
 router.post(
-  "/upload/:id",
+  "/upload",
   authMiddleware,
   isAdmin,
   uploadPhoto("products").array("images", 10),
@@ -28,5 +29,6 @@ router.post(
 router.post("/", authMiddleware, isAdmin, createProduct);
 router.put("/:id", authMiddleware, isAdmin, updateAProduct);
 router.delete("/:id", authMiddleware, isAdmin, deleteAProduct);
+router.delete("/delete-img/:id", authMiddleware, isAdmin, deleteImages);
 
 export default router;

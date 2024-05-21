@@ -1,22 +1,25 @@
-import mongoose from 'mongoose'; // Erase if already required
+import mongoose from "mongoose"; // Erase if already required
 
 // Declare the Schema of the Mongo model
-var couponSchema = new mongoose.Schema({
+const couponSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
-        unique: true,
-        uppercase: true
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true,
     },
     expiry: {
-        type: Date,
-        required: true,
+      type: Date,
+      required: true,
     },
     discount: {
-        type: Number,
-        required: true,
-    }
-}, { timeStamps: true });
+      type: Number,
+      required: true,
+    },
+  },
+  { timeStamps: true }
+);
 
 //Export the model
-export default mongoose.model('Coupon', couponSchema);
+export default mongoose.model("Coupon", couponSchema);
