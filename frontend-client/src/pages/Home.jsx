@@ -3,10 +3,12 @@ import Marquee from "react-fast-marquee";
 import BlogCard from "../components/BlogCard";
 import ProductCard from "../components/ProductCard";
 import SpecialProduct from "../components/SpecialProduct";
+import Meta from "../components/Meta";
 
 const Home = () => {
   return (
     <>
+      <Meta title="Home" />
       <section className="home-wrapper-1 py-5">
         <div className="container-xxl">
           <div className="row">
@@ -224,11 +226,41 @@ const Home = () => {
           <div className="row">
             <div className="col-3">
               <div className="famous-card position-relative">
-                <img src="images/laptop.jpg" alt="famous" />
+                <img src="images/famous-01.webp" className="img-fluid" alt="famous" />
                 <div className="famous-content position-absolute">
-                  <h5>Big Screen</h5>
-                  <h6>Smart Watch Series 7</h6>
-                  <p>From $399or $16.62/mo. for 24 mo.*</p>
+                  <h5 className="text-white">Big Screen</h5>
+                  <h6 className="text-white">Smart Watch Series 7</h6>
+                  <p className="text-white">From $399or $16.62/mo. for 24 mo.<sup>*</sup></p>
+                </div>
+              </div>
+            </div>
+            <div className="col-3">
+              <div className="famous-card position-relative">
+                <img src="images/famous-02.webp" className="img-fluid" alt="famous" />
+                <div className="famous-content position-absolute">
+                  <h5>Studio Display</h5>
+                  <h6>600 nits of brightnes</h6>
+                  <p>27-inch 5K Retina display</p>
+                </div>
+              </div>
+            </div>
+            <div className="col-3">
+              <div className="famous-card position-relative">
+                <img src="images/famous-03.webp" className="img-fluid" alt="famous" />
+                <div className="famous-content position-absolute">
+                  <h5>SMARTPHONES</h5>
+                  <h6>Smartphone 13 Pro.</h6>
+                  <p>Now in Green. From $999.00 or $41.62/mo. for 24 mo. Footnote<sup>*</sup></p>
+                </div>
+              </div>
+            </div>
+            <div className="col-3">
+              <div className="famous-card position-relative">
+                <img src="images/famous-04.webp" className="img-fluid" alt="famous" />
+                <div className="famous-content position-absolute">
+                  <h5>HOME SPEAKERS</h5>
+                  <h6>Room-filling sound.</h6>
+                  <p>From $699 or $116.58/mo. for 12 mo.<sup>*</sup></p>
                 </div>
               </div>
             </div>
@@ -245,6 +277,7 @@ const Home = () => {
             </div>
           </div>
           <div className="row">
+            <SpecialProduct />
             <SpecialProduct />
             <SpecialProduct />
             <SpecialProduct />
@@ -306,10 +339,10 @@ const Home = () => {
             <div className="col-12">
               <h3 className="section-heading">Our Latest Blogs</h3>
             </div>
-            <BlogCard />
-            <BlogCard />
-            <BlogCard />
-            <BlogCard />
+            <div className="col-3"><BlogCard /></div>
+            <div className="col-3"><BlogCard /></div>
+            <div className="col-3"><BlogCard /></div>
+            <div className="col-3"><BlogCard /></div>
           </div>
         </div>
       </section>
