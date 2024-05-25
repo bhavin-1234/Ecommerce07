@@ -13,8 +13,9 @@ const ProductCard = (props) => {
     const location = useLocation();
     return (
         <>
-            <div className={location.pathname === "/store" ? `gr-${grid}` : "col-3"} >
-                <Link to=":id" className="product-card position-relative">
+            <div className={location.pathname === "/product" ? `gr-${grid}` : "col-3"} >
+                {/* <Link to={location.pathname === "/product" ? ":id" : "product/:id"} className="product-card position-relative"> */}
+                <Link to="/product/:id" className="product-card position-relative">
                     <div className="wishlist-icon position-absolute">
                         <button className="border-0 bg-transparent">
                             <img src={wish} alt="wishlist" />
@@ -54,7 +55,7 @@ const ProductCard = (props) => {
                     </div>
                 </Link>
             </div>
-            <div className={location.pathname === "/store" ? `gr-${grid}` : "col-3"} >
+            <div className={location.pathname === "/product" ? `gr-${grid}` : "col-3"} >
                 <Link className="product-card position-relative">
                     <div className="wishlist-icon position-absolute">
                         <button className="border-0 bg-transparent">
