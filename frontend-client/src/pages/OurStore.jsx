@@ -4,6 +4,12 @@ import BreadCrumb from "../components/BreadCrumb";
 import ReactStars from "react-rating-stars-component";
 import ProductCard from "../components/ProductCard";
 import Color from "../components/Color";
+import watch from '../images/watch.jpg';
+import gr from '../images/gr.svg';
+import gr2 from '../images/gr2.svg';
+import gr3 from '../images/gr3.svg';
+import gr4 from '../images/gr4.svg';
+import Container from "../components/Container";
 
 const OurStore = () => {
     const [grid, setGrid] = useState(4);
@@ -12,8 +18,7 @@ const OurStore = () => {
         <>
             <Meta title="Oue Store" />
             <BreadCrumb title="Our Store" />
-            <div className="store-wrapper home-wrapper-2 py-5">
-                <div className="container-xxl">
+            <Container class1="store-wrapper home-wrapper-2 py-5">
                     <div className="row">
                         <div className="col-3">
                             <div className="filter-card mb-3">
@@ -90,7 +95,7 @@ const OurStore = () => {
                                 <div>
                                     <div className="random-products mb-3 d-flex">
                                         <div className="w-50">
-                                            <img src="images/watch.jpg" className="img-fluid" alt="watch" />
+                                            <img src={watch} className="img-fluid" alt="watch" />
                                         </div>
                                         <div className="w-50">
                                             <h5>Kids Headphones bulk 10 pack  multi  colored for students</h5>
@@ -106,7 +111,7 @@ const OurStore = () => {
                                     </div>
                                     <div className="random-products d-flex">
                                         <div className="w-50">
-                                            <img src="images/watch.jpg" className="img-fluid" alt="watch" />
+                                            <img src={watch} className="img-fluid" alt="watch" />
                                         </div>
                                         <div className="w-50">
                                             <h5>Kids Headphones bulk 10 pack  multi  colored for students</h5>
@@ -142,10 +147,10 @@ const OurStore = () => {
                                     <div className="d-flex align-items-center gap-10">
                                         <p className="total-products mb-0">21 Products</p>
                                         <div className="d-flex gap-10 align-items-center grid">
-                                            <img src="images/gr4.svg" onClick={() => { setGrid(3) }} className="d-block img-fluid" alt="grid" />
-                                            <img src="images/gr3.svg" onClick={() => { setGrid(4) }} className="d-block img-fluid" alt="grid" />
-                                            <img src="images/gr2.svg" onClick={() => { setGrid(6) }} className="d-block img-fluid" alt="grid" />
-                                            <img src="images/gr.svg" onClick={() => { setGrid(12) }} className="d-block img-fluid" alt="grid" />
+                                            <img src={gr4} onClick={() => { setGrid(3) }} className="d-block img-fluid" alt="grid" />
+                                            <img src={gr3} onClick={() => { setGrid(4) }} className="d-block img-fluid" alt="grid" />
+                                            <img src={gr2} onClick={() => { setGrid(6) }} className="d-block img-fluid" alt="grid" />
+                                            <img src={gr} onClick={() => { setGrid(12) }} className="d-block img-fluid" alt="grid" />
                                         </div>
                                     </div>
                                 </div>
@@ -157,8 +162,7 @@ const OurStore = () => {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+            </Container>
 
         </>
     )
