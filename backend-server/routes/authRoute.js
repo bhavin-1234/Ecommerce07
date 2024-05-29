@@ -22,7 +22,8 @@ import {
   emptyCart,
   applyCoupon,
   createOrder,
-  getOrders,
+  getOrder,
+  getAllOrders,
   updateOrderStatus,
 } from "../controllers/userCtrl.js";
 import { authMiddleware, isAdmin } from "../middlewares/authmiddleware.js";
@@ -33,7 +34,8 @@ router.put("reset-password/:token", resetPassword);
 router.post("/login", loginUserCtrl);
 router.post("/admin-login", loginAdmin);
 router.get("/all-users", getAllUser);
-router.get("/get-orders", authMiddleware, getOrders);
+router.get("/get-order", authMiddleware, getOrder);
+router.get("/get-all-orders", authMiddleware, isAdmin, getAllOrders);
 router.get("/refresh", refreshToken);
 router.get("/logout", logout);
 router.delete("/empty-cart", authMiddleware, emptyCart);

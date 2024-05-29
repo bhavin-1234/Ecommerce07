@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Outlet, Link } from "react-router-dom";
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const { Header, Sider, Content } = Layout;
 import { SiBrandfolder } from "react-icons/si";
 import { BiCategoryAlt } from "react-icons/bi";
@@ -12,8 +14,19 @@ import { FaClipboardList, FaBloggerB } from "react-icons/fa";
 import { AiOutlineBgColors, AiOutlineUser, AiOutlineShoppingCart, AiOutlineDashboard } from "react-icons/ai";
 import { IoIosNotifications } from "react-icons/io";
 import { ImBlog } from "react-icons/im";
+import { RiCouponLine } from "react-icons/ri";
 
 const MainLayout = () => {
+
+    useEffect(() => {
+        const login = JSON.parse(localStorage.getItem("user"));
+        if (!login) {
+            navigate("/");
+        }
+    })
+
+
+
     const navigate = useNavigate();
     const [collapsed, setCollapsed] = useState(false);
     const {
@@ -33,7 +46,6 @@ const MainLayout = () => {
                     mode="inline"
                     defaultSelectedKeys={['']}
                     onClick={({ key }) => {
-                        console.log(key);
                         if (key === "signout") {
                             null
                         } else {
@@ -103,6 +115,23 @@ const MainLayout = () => {
                             key: 'orders',
                             icon: <FaClipboardList className='fs-4' />,
                             label: 'Orders',
+                        },
+                        {
+                            key: 'marketing',
+                            icon: <RiCouponLine className='fs-4' />,
+                            label: 'Marketing',
+                            children: [
+                                {
+                                    key: 'coupon',
+                                    icon: <ImBlog className='fs-4' />,
+                                    label: 'Add Coupon',
+                                },
+                                {
+                                    key: 'coupon-list',
+                                    icon: <RiCouponLine className='fs-4' />,
+                                    label: 'Coupon List',
+                                }
+                            ]
                         },
                         {
                             key: 'blogs',
@@ -186,6 +215,17 @@ const MainLayout = () => {
                         borderRadius: borderRadiusLG,
                     }}
                 >
+                    <ToastContainer
+                        position="top-right"
+                        autoClose={1000}
+                        hideProgressBar={false}
+                        newestOnTop={true}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        theme="light"
+                    />
                     <Outlet />
                 </Content>
             </Layout>

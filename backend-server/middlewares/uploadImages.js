@@ -18,7 +18,7 @@ const multerStorage = (folder) =>
     destination: (req, file, cb) => {
       const destinationPath = path.join(
         __dirname,
-        `../ public / images / ${folder}`
+        `../public/images/${folder}`
       );
       createDirIfNotExist(destinationPath);
       cb(null, destinationPath);
@@ -57,8 +57,8 @@ const productImgResize = async (req, res, next) => {
           .resize(300, 300)
           .toFormat("jpeg")
           .jpeg({ quality: 90 })
-          .toFile(path.join(productDir, file.filename));
-        fs.unlinkSync(path.join(productDir, file.filename));
+          .toFile(path.join(productDir, `resized-${file.filename}`));
+        fs.unlinkSync(path.join(productDir, `resized-${file.filename}`));
       })
     );
     next();
@@ -80,8 +80,8 @@ const blogImgResize = async (req, res, next) => {
           .resize(300, 300)
           .toFormat("jpeg")
           .jpeg({ quality: 90 })
-          .toFile(path.join(blogDir, file.filename));
-        fs.unlinkSync(path.join(blogDir, file.filename));
+          .toFile(path.join(blogDir, `resized-${file.filename}`));
+        fs.unlinkSync(path.join(blogDir, `resized-${file.filename}`));
       })
     );
     next();

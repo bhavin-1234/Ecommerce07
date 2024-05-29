@@ -465,12 +465,24 @@ const createOrder = async (req, res) => {
   }
 };
 
-const getOrders = async (req, res) => {
+const getOrder = async (req, res) => {
   const { _id } = req.user;
   try {
     validateMongoDBID(_id);
     const userOrders = await Order.findOne({ orderBy: _id }).populate(
-      "products.product"
+      "products.product orderBy"
+    );
+    res.json(userOrders);
+  } catch (error) {
+    console.error("Error while fetching the order: ", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+};
+
+const getAllOrders = async (req, res) => {
+  try {
+    const userOrders = await Order.find({}).populate(
+      "products.product orderBy"
     );
     res.json(userOrders);
   } catch (error) {
@@ -523,6 +535,7 @@ export {
   emptyCart,
   applyCoupon,
   createOrder,
-  getOrders,
+  getOrder,
+  getAllOrders,
   updateOrderStatus,
 };

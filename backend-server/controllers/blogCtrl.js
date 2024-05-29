@@ -1,8 +1,8 @@
 import Blog from "../models/blogModel.js";
-import {
-  cloudinaryUploadImg,
-  cloudinaryDeleteImg,
-} from "../utils/cloudinary.js";
+// import {
+//   cloudinaryUploadImg,
+//   cloudinaryDeleteImg,
+// } from "../utils/cloudinary.js";
 import { validateMongoDBID } from "../utils/validateMongoDBID.js";
 
 const createBlog = async (req, res) => {
@@ -193,37 +193,37 @@ const disLikeBlog = async (req, res) => {
   }
 };
 
-const uploadImages = async (req, res) => {
-  const { id } = req.params;
-  try {
-    validateMongoDBID(id);
-    const uploader = (path) => cloudinaryUploadImg(path, "images");
-    const urls = [];
-    const files = req.files;
-    for (const file of files) {
-      const { path } = file;
-      const newPath = await uploader(path);
-      urls.push(newPath);
-    }
-    const images = urls.map((file) => file);
-    res.json(images);
-  } catch (error) {
-    console.error("Error while uploading blog images: ", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+// const uploadImages = async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     validateMongoDBID(id);
+//     const uploader = (path) => cloudinaryUploadImg(path, "images");
+//     const urls = [];
+//     const files = req.files;
+//     for (const file of files) {
+//       const { path } = file;
+//       const newPath = await uploader(path);
+//       urls.push(newPath);
+//     }
+//     const images = urls.map((file) => file);
+//     res.json(images);
+//   } catch (error) {
+//     console.error("Error while uploading blog images: ", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
-const deleteImages = async (req, res) => {
-  const { id } = req.params;
-  try {
-    validateMongoDBID(id);
-    const deleted = cloudinaryDeleteImg(id, "images");
-    res.json({ message: "Deleted" });
-  } catch (error) {
-    console.error("Error while deleting blog images: ", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+// const deleteImages = async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     validateMongoDBID(id);
+//     const deleted = cloudinaryDeleteImg(id, "images");
+//     res.json({ message: "Deleted" });
+//   } catch (error) {
+//     console.error("Error while deleting blog images: ", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 export {
   createBlog,
@@ -233,6 +233,6 @@ export {
   deleteBlog,
   likeBlog,
   disLikeBlog,
-  uploadImages,
-  deleteImages,
+  // uploadImages,
+  // deleteImages,
 };

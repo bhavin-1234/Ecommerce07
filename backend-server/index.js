@@ -14,11 +14,14 @@ import brandRouter from "./routes/brandRoute.js";
 import colorRouter from "./routes/colorRoute.js";
 import couponRouter from "./routes/couponRoute.js";
 import enqRouter from "./routes/enqRoute.js";
+import imageRouter from "./routes/imageRoute.js";
 import morgan from "morgan";
+import cors from "cors";
 
 dbConnect();
 
 app.use(morgan("dev"));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -32,6 +35,7 @@ app.use("/api/brand", brandRouter);
 app.use("/api/coupon", couponRouter);
 app.use("/api/color", colorRouter);
 app.use("/api/enquiry", enqRouter);
+app.use("/api/image", imageRouter);
 
 app.listen(port, () => {
   console.log(`server is running at port ${port}`);

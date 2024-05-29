@@ -46,3 +46,27 @@
   font-family: "Roboto" !important;
   color: var(--color-828599);
 }
+
+.error {
+  color: red;
+  font-size: 12px;
+  /* margin-top: -10px; */
+}
+
+/* .myDropZone {
+  position: relative;
+  height: 200px;
+  background-color: red;
+  width: 100%;
+} */
+
+.myDropZone > section > div {
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  background: white;
+  height: 150px;
+  margin: 16px 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
