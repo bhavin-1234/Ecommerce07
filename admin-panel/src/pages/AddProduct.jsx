@@ -5,8 +5,8 @@ import 'react-quill/dist/quill.snow.css';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from "react-redux";
-import { getBrands } from "../features/brand/brandSlice";
-import { getPCategory } from "../features/pCategory/pCategorySlice";
+import { getAllBrands } from "../features/brand/brandSlice";
+import { getPCategories } from "../features/pCategory/pCategorySlice";
 import { toast } from 'react-toastify';
 
 // import Multiselect from "react-widgets/Multiselect";
@@ -70,8 +70,8 @@ const AddProduct = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getBrands());
-        dispatch(getPCategory());
+        dispatch(getAllBrands());
+        dispatch(getPCategories());
         dispatch(getColors());
 
 

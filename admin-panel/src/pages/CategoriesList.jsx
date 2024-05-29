@@ -1,21 +1,51 @@
 import { Table } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPCategory } from '../features/pCategory/pCategorySlice';
+import { deletePCategory, getPCategories, resetState } from '../features/pCategory/pCategorySlice';
 import { Link } from 'react-router-dom';
 import { BiEdit } from 'react-icons/bi';
 import { AiFillDelete } from 'react-icons/ai';
+import { Tooltip } from 'react-tooltip';
+import CustomModal from '../components/CustomModal';
+import { toast } from 'react-toastify';
 
 
 const CategoriesList = () => {
 
+    const [open, setOpen] = useState(false);
+    const [pCategoryId, setPCategoryId] = useState("");
+
+    const hideModal = () => {
+        setOpen(false);
+    }
+
+    const showModal = (id) => {
+        setOpen(true);
+        setPCategoryId(id);
+    }
+
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getPCategory())
-    }, []);
+        dispatch(resetState());
+        dispatch(getPCategories());
+    }, [dispatch]);
 
     const pCategoryState = useSelector(state => state.pCategory.productCategories);
+
+    const { isSuccess, isError, deletedPCategory } = useSelector(state => state.pCategory);
+
+    useEffect(() => {
+        if (isSuccess && deletedPCategory) {
+            toast.success("Product Category Deleted Successfully!", {
+                onClose: () => {
+                    dispatch(resetState());
+                    dispatch(getPCategories());
+                }
+            });
+        }
+
+    }, [isSuccess, isError, deletedPCategory, dispatch]);
 
 
     const columns = [
@@ -41,21 +71,51 @@ const CategoriesList = () => {
             name: pCategoryState[i].title,
             action:
                 <>
-                    <Link className="fs-3 text-danger" to="/">
+                    <Link
+                        className="fs-3 text-danger"
+                        to={`/admin/category/${pCategoryState[i]._id}`}
+                        data-tooltip-id="my-tooltip-1"
+                        data-tooltip-content="Edit"
+                        data-tooltip-place="bottom"
+                        data-tooltip-class-name="rounded-5 px-3 py-0"
+                        data-tooltip-variant="info"
+                    >
                         <BiEdit />
                     </Link>
-                    <Link className="ms-3 fs-3 text-danger" to="/">
+                    <Tooltip id="my-tooltip-1" />
+
+                    <button
+                        onClick={() => showModal(pCategoryState[i]._id)}
+                        type="submit"
+                        className="ms-3 fs-3 text-danger bg-transparent border-0"
+                        data-tooltip-id="my-tooltip-2"
+                        data-tooltip-content="Delete"
+                        data-tooltip-place="bottom"
+                        data-tooltip-class-name="rounded-5 px-3 py-0"
+                        data-tooltip-variant="error"
+                    >
                         <AiFillDelete />
-                    </Link>
+                    </button>
+                    <Tooltip id="my-tooltip-2" />
+
                 </>
         });
     }
+
+
+
+    const handleDelete = () => {
+        dispatch(deletePCategory(pCategoryId));
+    };
 
     return (
         <div>
             <h3 className="mb-4 title">Product Categories</h3>
             <div>
                 <Table columns={columns} dataSource={data1} />
+            </div>
+            <div>
+                <CustomModal title="Are you sure you want to delete this Product Category?" performAction={() => handleDelete()} open={open} hideModal={hideModal} />
             </div>
         </div>
     )

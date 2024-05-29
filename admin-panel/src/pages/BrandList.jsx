@@ -1,22 +1,52 @@
 import { Table } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBrands } from '../features/brand/brandSlice';
+import { deleteBrand, getAllBrands, resetState } from '../features/brand/brandSlice';
 import { BiEdit } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import { AiFillDelete } from 'react-icons/ai';
-
-
+import { Tooltip } from "react-tooltip";
+import { toast } from 'react-toastify';
+import CustomModal from '../components/CustomModal';
 
 
 const BrandList = () => {
+
+    const [open, setOpen] = useState(false);
+    const [brandId, setBrandId] = useState("");
+
+    const showModal = (id) => {
+        setOpen(true);
+        setBrandId(id);
+    };
+    const hideModal = () => {
+        setOpen(false);
+    };
+
+
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getBrands())
-    }, []);
+        dispatch(resetState());
+        dispatch(getAllBrands());
+    }, [dispatch]);
 
     const brandState = useSelector(state => state.brand.brands);
+
+    const deletedBrandState = useSelector(state => state.brand);
+    const { isSuccess, isError, deletedBrand } = deletedBrandState;
+
+    useEffect(() => {
+        isSuccess && deletedBrand && toast.success("Brand Deleted Successfully!", {
+            onClose: () => {
+                dispatch(resetState());
+                dispatch(getAllBrands());
+            }
+        })
+
+    }, [isSuccess, isError, deletedBrand, dispatch]);
+
+
 
     const columns = [
         {
@@ -39,14 +69,37 @@ const BrandList = () => {
             name: brandState[i].title,
             action:
                 <>
-                    <Link className="fs-3 text-danger" to="/">
+                    <Link
+                        to={`/admin/brand/${brandState[i]._id}`}
+                        className="fs-3 text-danger" data-tooltip-id="my-tooltip-1"
+                        data-tooltip-content="Edit"
+                        data-tooltip-place="bottom"
+                        data-tooltip-class-name="rounded-5 px-3 py-0"
+                        data-tooltip-variant="info"
+                    >
                         <BiEdit />
                     </Link>
-                    <Link className="ms-3 fs-3 text-danger" to="/">
+                    <Tooltip id="my-tooltip-1" />
+                    <button
+                        type="button"
+                        onClick={() => showModal(brandState[i]._id)}
+                        className="ms-3 fs-3 text-danger bg-transparent border-0"
+                        data-tooltip-id="my-tooltip-2"
+                        data-tooltip-content="Delete"
+                        data-tooltip-place="bottom"
+                        data-tooltip-class-name="rounded-5 px-3 py-0"
+                        data-tooltip-variant="error"
+                    >
                         <AiFillDelete />
-                    </Link>
+                    </button>
+                    <Tooltip id="my-tooltip-2" />
                 </>
         });
+    }
+
+    const deleteABrand = (id) => {
+        dispatch(deleteBrand(id));
+        hideModal();
     }
 
 
@@ -55,6 +108,9 @@ const BrandList = () => {
             <h3 className="mb-4 title">Brands</h3>
             <div>
                 <Table columns={columns} dataSource={data1} />
+            </div>
+            <div>
+                <CustomModal title="Are you sure you want to delete this Brand?" performAction={() => deleteABrand(brandId)} hideModal={hideModal} open={open} />
             </div>
         </div>
     )

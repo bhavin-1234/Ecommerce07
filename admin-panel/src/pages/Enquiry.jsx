@@ -1,7 +1,6 @@
 import { Table } from 'antd';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getBrands } from '../features/brand/brandSlice';
 import { getEnquiries } from '../features/enquiry/enquirySlice';
 import { Link } from 'react-router-dom';
 import { AiFillDelete } from 'react-icons/ai';
