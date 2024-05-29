@@ -1,9 +1,10 @@
-import Blog from "../models/blogModel.js";
-// import {
+const Blog = require("../models/blogModel.js");
+const { validateMongoDBID } = require("../utils/validateMongoDBID");
+// const {
 //   cloudinaryUploadImg,
 //   cloudinaryDeleteImg,
-// } from "../utils/cloudinary.js";
-import { validateMongoDBID } from "../utils/validateMongoDBID.js";
+// } = require("../utils/cloudinary.js");
+// const { validateMongoDBID } = require("../utils/validateMongoDBID.js");
 
 const createBlog = async (req, res) => {
   try {
@@ -225,7 +226,7 @@ const disLikeBlog = async (req, res) => {
 //   }
 // };
 
-export {
+module.exports = {
   createBlog,
   updateBlog,
   getBlog,

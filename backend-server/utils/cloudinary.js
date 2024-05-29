@@ -1,6 +1,6 @@
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 dotenv.config();
-import cloudinary from "cloudinary";
+const cloudinary = require("cloudinary");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -42,4 +42,4 @@ const cloudinaryDeleteImg = async (fileToDelete) => {
   });
 };
 
-export { cloudinaryUploadImg, cloudinaryDeleteImg };
+module.exports = { cloudinaryUploadImg, cloudinaryDeleteImg };

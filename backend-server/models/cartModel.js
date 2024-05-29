@@ -1,4 +1,4 @@
-import mongoose from "mongoose"; // Erase if already required
+const mongoose = require("mongoose"); // Erase if already required
 
 // Declare the Schema of the Mongo model
 var cartSchema = new mongoose.Schema(
@@ -25,4 +25,4 @@ var cartSchema = new mongoose.Schema(
 );
 
 //Export the model
-export default mongoose.model("Cart", cartSchema);
+module.exports = mongoose.model("Cart", cartSchema);

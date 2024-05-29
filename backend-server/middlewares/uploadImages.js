@@ -1,11 +1,11 @@
-import multer from "multer";
-import sharp from "sharp";
-import path from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
+const multer = require("multer");
+const sharp = require("sharp");
+// const path = require("path");
+// const { fileURLToPath } = require("url");
+const fs = require("fs");
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 const createDirIfNotExist = (dir) => {
   if (!fs.existsSync(dir)) {
@@ -16,10 +16,8 @@ const createDirIfNotExist = (dir) => {
 const multerStorage = (folder) =>
   multer.diskStorage({
     destination: (req, file, cb) => {
-      const destinationPath = path.join(
-        __dirname,
-        `../public/images/${folder}`
-      );
+      // const destinationPath = path.join(__dirname, `../public/images/${folder}`);
+      const destinationPath = `../public/images/${folder}`;
       createDirIfNotExist(destinationPath);
       cb(null, destinationPath);
     },
@@ -44,11 +42,11 @@ const uploadPhoto = (folder) =>
     limits: { fileSize: 2000000 },
   });
 
-const productImgResize = async (req, res, next) => {
+const resizeImage = async (req, res, next, folderName) => {
   if (!req.files) return next();
 
-  const productDir = path.join(__dirname, "../public/images/products");
-  createDirIfNotExist(productDir);
+  const imagesDir = `../public/images/${folderName}`;
+  createDirIfNotExist(imagesDir);
 
   try {
     await Promise.all(
@@ -57,37 +55,23 @@ const productImgResize = async (req, res, next) => {
           .resize(300, 300)
           .toFormat("jpeg")
           .jpeg({ quality: 90 })
-          .toFile(path.join(productDir, `resized-${file.filename}`));
-        fs.unlinkSync(path.join(productDir, `resized-${file.filename}`));
+          .toFile(`${folderName}/resized-${file.filename}`);
+        fs.unlinkSync(`${folderName}/resized-${file.filename}`);
       })
     );
     next();
   } catch (error) {
     next(error);
   }
+};
+
+
+const productImgResize = async (req, res, next) => {
+  resizeImage(req, res, next, "products");
 };
 
 const blogImgResize = async (req, res, next) => {
-  if (!req.files) return next();
-
-  const blogDir = path.join(__dirname, "../public/images/blogs");
-  createDirIfNotExist(blogDir);
-
-  try {
-    await Promise.all(
-      req.files.map(async (file) => {
-        await sharp(file.path)
-          .resize(300, 300)
-          .toFormat("jpeg")
-          .jpeg({ quality: 90 })
-          .toFile(path.join(blogDir, `resized-${file.filename}`));
-        fs.unlinkSync(path.join(blogDir, `resized-${file.filename}`));
-      })
-    );
-    next();
-  } catch (error) {
-    next(error);
-  }
+  resizeImage(req, res, next, "blogs");
 };
 
-export { uploadPhoto, productImgResize, blogImgResize };
+module.exports = { uploadPhoto, productImgResize, blogImgResize };

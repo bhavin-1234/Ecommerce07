@@ -1,15 +1,15 @@
-import { generateToken } from "../config/jwtToken.js";
-import { generateRefreshToken } from "../config/refreshToken.js";
-import User from "../models/UserModel.js";
-import Product from "../models/productModel.js";
-import Cart from "../models/cartModel.js";
-import Coupon from "../models/couponModel.js";
-import { validateMongoDBID } from "../utils/validateMongoDBID.js";
-import jwt from "jsonwebtoken";
-import sendEmail from "./emailCtrl.js";
-import crypto from "crypto";
-import uniqid from "uniqid";
-import Order from "../models/orderModel.js";
+const { generateToken } = require("../config/jwtToken");
+const { generateRefreshToken } = require("../config/refreshToken");
+const User = require("../models/UserModel");
+const Product = require("../models/productModel");
+const Cart = require("../models/cartModel");
+const Coupon = require("../models/couponModel");
+const { validateMongoDBID } = require("../utils/validateMongoDBID");
+const jwt = require("jsonwebtoken");
+const sendEmail = require("./emailCtrl");
+const crypto = require("crypto");
+const uniqid = require("uniqid");
+const Order = require("../models/orderModel");
 
 // create a user
 const createUser = async (req, res) => {
@@ -513,7 +513,7 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-export {
+module.exports = {
   createUser,
   loginUserCtrl,
   loginAdmin,

@@ -1,6 +1,6 @@
-import express from "express";
-import { createCategory, deleteCategory, getACategory, getAllCategory, updateCategory } from "../controllers/blogCategoryCtrl.js";
-import { authMiddleware, isAdmin } from "../middlewares/authmiddleware.js";
+const express = require("express");
+const { createCategory, deleteCategory, getACategory, getAllCategory, updateCategory } = require("../controllers/blogCategoryCtrl");
+const { authMiddleware, isAdmin } = require("../middlewares/authmiddleware");
 const router = express.Router();
 
 router.get("/:id", getACategory);
@@ -9,4 +9,4 @@ router.post("/", authMiddleware, isAdmin, createCategory);
 router.put("/:id", authMiddleware, isAdmin, updateCategory);
 router.delete("/:id", authMiddleware, isAdmin, deleteCategory);
 
-export default router;
+module.exports = router;

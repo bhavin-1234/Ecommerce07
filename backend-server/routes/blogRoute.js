@@ -1,6 +1,6 @@
-import express from "express";
-import { authMiddleware, isAdmin } from "../middlewares/authmiddleware.js";
-import {
+const express = require("express");
+const { authMiddleware, isAdmin } = require("../middlewares/authmiddleware");
+const {
   createBlog,
   getAllBlog,
   getBlog,
@@ -9,9 +9,9 @@ import {
   likeBlog,
   disLikeBlog,
   // uploadImages,
-} from "../controllers/blogCtrl.js";
-// import { blogImgResize, uploadPhoto } from "../middlewares/uploadImages.js";
-// import { deleteImages } from "../controllers/productCtrl.js";
+} = require("../controllers/blogCtrl");
+// const { blogImgResize, uploadPhoto } = require("../middlewares/uploadImages");
+// const { deleteImages } = require("../controllers/productCtrl");
 const router = express.Router();
 
 router.get("/", getAllBlog);
@@ -31,4 +31,4 @@ router.post("/", authMiddleware, isAdmin, createBlog);
 router.delete("/:id", authMiddleware, isAdmin, deleteBlog);
 // router.delete("/delete-img/:id", authMiddleware, isAdmin, deleteImages);
 
-export default router;
+module.exports = router;

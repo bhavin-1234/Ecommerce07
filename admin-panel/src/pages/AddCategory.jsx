@@ -4,9 +4,8 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { createPCategory, getPCategory, resetState } from '../features/pCategory/pCategorySlice';
+import { createPCategory, getPCategory, resetState, updatePCategory } from '../features/pCategory/pCategorySlice';
 import { useParams } from 'react-router-dom';
-import { updateAProduct } from '../../../backend-server/controllers/productCtrl';
 
 
 const AddCategory = () => {
@@ -42,7 +41,7 @@ const AddCategory = () => {
         onSubmit: values => {
             const data = { id: pCategoryID, pCategoryData: values.title }
             if (pCategoryID) {
-                dispatch(updateAProduct(data));
+                dispatch(updatePCategory(data));
             } else {
                 dispatch(createPCategory(values));
             }

@@ -1,6 +1,6 @@
-import express from "express";
+const express = require("express");
 const router = express.Router();
-import {
+const {
   addToWishlist,
   createProduct,
   deleteAProduct,
@@ -8,8 +8,8 @@ import {
   getAllProducts,
   rating,
   updateAProduct,
-} from "../controllers/productCtrl.js";
-import { authMiddleware, isAdmin } from "../middlewares/authmiddleware.js";
+} = require("../controllers/productCtrl");
+const { authMiddleware, isAdmin } = require("../middlewares/authmiddleware");
 
 router.get("/", getAllProducts);
 router.get("/:id", getAProduct);
@@ -19,4 +19,4 @@ router.post("/", authMiddleware, isAdmin, createProduct);
 router.put("/:id", authMiddleware, isAdmin, updateAProduct);
 router.delete("/:id", authMiddleware, isAdmin, deleteAProduct);
 
-export default router;
+module.exports = router;

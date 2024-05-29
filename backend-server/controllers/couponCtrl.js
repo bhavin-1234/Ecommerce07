@@ -1,5 +1,5 @@
-import Coupon from "../models/couponModel.js";
-import { validateMongoDBID } from "../utils/validateMongoDBID.js";
+const Coupon = require("../models/couponModel");
+const { validateMongoDBID } = require("../utils/validateMongoDBID");
 
 
 const createCoupon = async (req, res) => {
@@ -46,4 +46,4 @@ const deleteCoupon = async (req, res) => {
     }
 };
 
-export { createCoupon, getAllCoupon, updateCoupon, deleteCoupon };
+module.exports = { createCoupon, getAllCoupon, updateCoupon, deleteCoupon };

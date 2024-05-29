@@ -1,22 +1,22 @@
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 dotenv.config();
-import express from "express";
-import { dbConnect } from "./config/dbConnect.js";
+const express = require("express");
+const { dbConnect } = require("./config/dbConnect");
 const app = express();
 const port = process.env.PORT || 8000;
-import authRouter from "./routes/authRoute.js";
-import cookieParser from "cookie-parser";
-import productRouter from "./routes/productRoute.js";
-import blogRouter from "./routes/blogRoute.js";
-import productCategoryRouter from "./routes/productCategoryRoute.js";
-import blogCategoryRouter from "./routes/blogCategoryRoute.js";
-import brandRouter from "./routes/brandRoute.js";
-import colorRouter from "./routes/colorRoute.js";
-import couponRouter from "./routes/couponRoute.js";
-import enqRouter from "./routes/enqRoute.js";
-import imageRouter from "./routes/imageRoute.js";
-import morgan from "morgan";
-import cors from "cors";
+const authRouter = require("./routes/authRoute");
+const cookieParser = require("cookie-parser");
+const productRouter = require("./routes/productRoute");
+const blogRouter = require("./routes/blogRoute");
+const productCategoryRouter = require("./routes/productCategoryRoute");
+const blogCategoryRouter = require("./routes/blogCategoryRoute");
+const brandRouter = require("./routes/brandRoute");
+const colorRouter = require("./routes/colorRoute");
+const couponRouter = require("./routes/couponRoute");
+const enqRouter = require("./routes/enqRoute");
+const imageRouter = require("./routes/imageRoute");
+const morgan = require("morgan");
+const cors = require("cors");
 
 dbConnect();
 

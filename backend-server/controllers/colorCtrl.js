@@ -1,5 +1,5 @@
-import Color from "../models/colorModel.js";
-import { validateMongoDBID } from "../utils/validatemongodbid.js";
+const Color = require("../models/colorModel");
+const { validateMongoDBID } = require("../utils/validatemongoDBID");
 
 const createColor = async (req, res) => {
   try {
@@ -59,4 +59,4 @@ const getAllColor = async (req, res) => {
   }
 };
 
-export { createColor, updateColor, deleteColor, getAColor, getAllColor };
+module.exports = { createColor, updateColor, deleteColor, getAColor, getAllColor };

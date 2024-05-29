@@ -1,6 +1,6 @@
-import express from "express";
+const express = require("express");
 const router = express.Router();
-import {
+const {
   blockUser,
   createUser,
   deleteAUser,
@@ -25,8 +25,8 @@ import {
   getOrder,
   getAllOrders,
   updateOrderStatus,
-} from "../controllers/userCtrl.js";
-import { authMiddleware, isAdmin } from "../middlewares/authmiddleware.js";
+} = require("../controllers/userCtrl");
+const { authMiddleware, isAdmin } = require("../middlewares/authmiddleware");
 
 router.post("/register", createUser);
 router.post("forgot-password-token", forgotPasswordToken);
@@ -58,4 +58,4 @@ router.get("/:id", authMiddleware, isAdmin, getAUser);
 router.put("/block-user/:id", authMiddleware, isAdmin, blockUser);
 router.put("/unblock-user/:id", authMiddleware, isAdmin, unblockUser);
 
-export default router;
+module.exports = router;

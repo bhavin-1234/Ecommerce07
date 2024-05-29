@@ -1,4 +1,4 @@
-import mongoose from "mongoose"; // Erase if already required
+const mongoose = require("mongoose"); // Erase if already required
 
 // Declare the Schema of the Mongo model
 const enquirySchema = new mongoose.Schema({
@@ -26,4 +26,4 @@ const enquirySchema = new mongoose.Schema({
 }, { timestamps: true });
 
 //Export the model
-export default mongoose.model("Enquiry", enquirySchema);
+module.exports = mongoose.model("Enquiry", enquirySchema);

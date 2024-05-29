@@ -1,7 +1,7 @@
-import slugify from "slugify";
-import User from "../models/UserModel.js";
-import Product from "../models/productModel.js";
-import { validateMongoDBID } from "../utils/validateMongoDBID.js";
+const slugify = require("slugify");
+const User = require("../models/UserModel");
+const Product = require("../models/productModel");
+const { validateMongoDBID } = require("../utils/validateMongoDBID");
 
 
 const createProduct = async (req, res) => {
@@ -206,7 +206,7 @@ const rating = async (req, res) => {
 
 
 
-export {
+module.exports = {
   createProduct,
   getAProduct,
   getAllProducts,

@@ -1,4 +1,4 @@
-import mongoose from "mongoose"; // Erase if already required
+const mongoose = require("mongoose"); // Erase if already required
 
 // Declare the Schema of the Mongo model
 const couponSchema = new mongoose.Schema(
@@ -22,4 +22,4 @@ const couponSchema = new mongoose.Schema(
 );
 
 //Export the model
-export default mongoose.model("Coupon", couponSchema);
+module.exports = mongoose.model("Coupon", couponSchema);

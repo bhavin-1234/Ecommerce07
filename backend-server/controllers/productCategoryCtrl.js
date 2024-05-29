@@ -1,5 +1,5 @@
-import Category from "../models/productCategoryModel.js";
-import { validateMongoDBID } from "../utils/validatemongodbid.js";
+const Category = require("../models/productCategoryModel");
+const { validateMongoDBID } = require("../utils/validatemongoDBID");
 
 const createCategory = async (req, res) => {
     try {
@@ -63,4 +63,4 @@ const getAllCategory = async (req, res) => {
 };
 
 
-export { createCategory, updateCategory, deleteCategory, getACategory, getAllCategory };
+module.exports = { createCategory, updateCategory, deleteCategory, getACategory, getAllCategory };

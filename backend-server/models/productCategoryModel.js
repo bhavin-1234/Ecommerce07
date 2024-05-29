@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'; // Erase if already required
+const mongoose = require('mongoose'); // Erase if already required
 
 // Declare the Schema of the Mongo model
 var productCategorySchema = new mongoose.Schema({
@@ -11,4 +11,4 @@ var productCategorySchema = new mongoose.Schema({
 }, { timestamps: true });
 
 //Export the model
-export default mongoose.model('ProductCategory', productCategorySchema);
+module.exports = mongoose.model('ProductCategory', productCategorySchema);

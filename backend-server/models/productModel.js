@@ -1,4 +1,4 @@
-import mongoose from "mongoose"; // Erase if already required
+const mongoose = require("mongoose"); // Erase if already required
 
 // Declare the Schema of the Mongo model
 var productSchema = new mongoose.Schema(
@@ -67,4 +67,4 @@ var productSchema = new mongoose.Schema(
 );
 
 //Export the model
-export default mongoose.model("Product", productSchema);
+module.exports = mongoose.model("Product", productSchema);

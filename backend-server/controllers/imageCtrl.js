@@ -1,7 +1,7 @@
-import {
+const {
     cloudinaryUploadImg,
     cloudinaryDeleteImg,
-} from "../utils/cloudinary.js";
+} = require("../utils/cloudinary");
 
 const uploadImages = async (req, res) => {
     try {
@@ -34,4 +34,4 @@ const deleteImages = async (req, res) => {
     }
 };
 
-export { uploadImages, deleteImages };
+module.exports = { uploadImages, deleteImages };

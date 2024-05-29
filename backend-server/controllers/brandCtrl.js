@@ -1,5 +1,5 @@
-import Brand from "../models/brandModel.js";
-import { validateMongoDBID } from "../utils/validatemongodbid.js";
+const Brand = require("../models/brandModel.js");
+const { validateMongoDBID } = require("../utils/validatemongoDBID");
 
 const createBrand = async (req, res) => {
     try {
@@ -63,4 +63,4 @@ const getAllBrand = async (req, res) => {
 };
 
 
-export { createBrand, updateBrand, deleteBrand, getABrand, getAllBrand };
+module.exports = { createBrand, updateBrand, deleteBrand, getABrand, getAllBrand };

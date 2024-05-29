@@ -1,11 +1,11 @@
-import express from "express";
+const express = require("express");
 const router = express.Router();
-import {
+const {
     deleteImages,
     uploadImages,
-} from "../controllers/imageCtrl.js";
-import { uploadPhoto, productImgResize } from "../middlewares/uploadImages.js";
-import { authMiddleware, isAdmin } from "../middlewares/authmiddleware.js";
+} = require("../controllers/imageCtrl");
+const { uploadPhoto, productImgResize } = require("../middlewares/uploadImages");
+const { authMiddleware, isAdmin } = require("../middlewares/authmiddleware");
 
 router.post(
     "/upload",
@@ -17,4 +17,4 @@ router.post(
 );
 router.delete("/delete/:id", authMiddleware, isAdmin, deleteImages);
 
-export default router;
+module.exports = router;

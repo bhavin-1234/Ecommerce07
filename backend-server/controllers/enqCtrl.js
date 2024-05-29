@@ -1,5 +1,5 @@
-import Enquiry from "../models/enqModel.js";
-import { validateMongoDBID } from "../utils/validatemongodbid.js";
+const Enquiry = require("../models/enqModel");
+const { validateMongoDBID } = require("../utils/validatemongoDBID");
 
 const createEnquiry = async (req, res) => {
   try {
@@ -59,7 +59,7 @@ const getAllEnquiry = async (req, res) => {
   }
 };
 
-export {
+module.exports = {
   createEnquiry,
   updateEnquiry,
   deleteEnquiry,
