@@ -29,7 +29,7 @@ const CategoriesList = () => {
     useEffect(() => {
         dispatch(resetState());
         dispatch(getPCategories());
-    }, [dispatch]);
+    }, []);
 
     const pCategoryState = useSelector(state => state.pCategory.productCategories);
 
@@ -45,7 +45,7 @@ const CategoriesList = () => {
             });
         }
 
-    }, [isSuccess, isError, deletedPCategory, dispatch]);
+    }, [isSuccess, isError, deletedPCategory]);
 
 
     const columns = [
@@ -106,6 +106,7 @@ const CategoriesList = () => {
 
     const handleDelete = () => {
         dispatch(deletePCategory(pCategoryId));
+        hideModal();
     };
 
     return (

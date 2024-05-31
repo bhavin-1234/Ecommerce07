@@ -17,6 +17,30 @@ export const createColor = createAsyncThunk("color/create-color", async (colorDa
     }
 });
 
+export const getColor = createAsyncThunk("color/get-color", async (colorID, thunkAPI) => {
+    try {
+        return await colorService.getColor(colorID);
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error);
+    }
+});
+
+export const updateColor = createAsyncThunk("color/update-color", async (data, thunkAPI) => {
+    try {
+        return await colorService.updateColor(data);
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error);
+    }
+});
+
+export const deleteColor = createAsyncThunk("color/delete-color", async (colorID, thunkAPI) => {
+    try {
+        return await colorService.deleteColor(colorID);
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error);
+    }
+});
+
 export const resetState = createAction("Reset_all");
 
 
@@ -48,7 +72,24 @@ export const colorSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
-                state.colors = null;
+                // state.colors = null;
+                state.message = action.error;
+            })
+            .addCase(getColor.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(getColor.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.isSuccess = true;
+                state.fetchedColor = action.payload.title;
+                state.message = "success";
+            })
+            .addCase(getColor.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.isSuccess = false;
+                // state.productCategories = null;
                 state.message = action.error;
             })
             .addCase(createColor.pending, (state) => {
@@ -65,7 +106,41 @@ export const colorSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
-                state.createdColor = null;
+                // state.createdColor = null;
+                state.message = action.error;
+            })
+            .addCase(updateColor.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(updateColor.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.isSuccess = true;
+                state.updatedColor = action.payload;
+                state.message = "success";
+            })
+            .addCase(updateColor.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.isSuccess = false;
+                // state.updatedPCategory = null;
+                state.message = action.error;
+            })
+            .addCase(deleteColor.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(deleteColor.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.isSuccess = true;
+                state.deletedColor = action.payload;
+                state.message = "success";
+            })
+            .addCase(deleteColor.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.isSuccess = false;
+                // state.deletedPCategory = null;
                 state.message = action.error;
             })
             .addCase(resetState, () => initialState)

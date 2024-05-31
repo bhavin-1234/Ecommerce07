@@ -22,6 +22,18 @@ const getAllCoupon = async (req, res) => {
     }
 };
 
+const getACoupon = async (req, res) => {
+    const { id } = req.params;
+    try {
+        validateMongoDBID(id);
+        const singleCoupon = await Coupon.findById(id);
+        res.json(singleCoupon);
+    } catch (error) {
+        console.error("Error while fetching the Coupon: ", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 const updateCoupon = async (req, res) => {
     const { id } = req.params;
     try {
@@ -46,4 +58,4 @@ const deleteCoupon = async (req, res) => {
     }
 };
 
-module.exports = { createCoupon, getAllCoupon, updateCoupon, deleteCoupon };
+module.exports = { createCoupon, getAllCoupon, updateCoupon, deleteCoupon, getACoupon };

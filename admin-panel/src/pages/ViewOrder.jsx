@@ -1,24 +1,36 @@
 import { Table } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { getOrders } from '../features/auth/authSlice';
+// import { getOrderByUser, getOrders } from '../features/auth/authSlice';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BiEdit } from 'react-icons/bi';
 import { AiFillDelete } from 'react-icons/ai';
-import moment from 'moment';
+// import moment from 'moment';
+
+import { useParams } from "react-router-dom";
+import { getOrderByUser } from '../features/auth/authSlice';
 
 
 
-const Orders = () => {
+
+const ViewOrder = () => {
+
+    const navigate = useParams();
+    const userId = navigate.id;
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getOrders());
+        dispatch(getOrderByUser(userId));
     }, []);
 
-    const orderState = useSelector(state => state.auth.orders);
-    console.log('orderState: ', orderState);
+    const orderState = useSelector(state => state.auth?.orderbyuser?.products);
+
+    console.log(orderState);
+
+
+    // const orderState = useSelector(state => state.auth.orders);
+    // console.log('orderState: ', orderState);
 
 
     const columns = [
@@ -27,12 +39,20 @@ const Orders = () => {
             dataIndex: 'key',
         },
         {
-            title: 'Name',
+            title: 'Product Name',
             dataIndex: 'name',
         },
         {
-            title: 'Products',
-            dataIndex: 'products',
+            title: 'Brand',
+            dataIndex: 'brand',
+        },
+        {
+            title: 'Count',
+            dataIndex: 'count',
+        },
+        {
+            title: 'Color',
+            dataIndex: 'color',
         },
         {
             title: 'Amount',
@@ -48,23 +68,15 @@ const Orders = () => {
         },
     ];
     const data1 = [];
-    for (let i = 0; i < orderState.length; i++) {
-
-        console.log(orderState[i]?._id);
+    for (let i = 0; i < orderState?.length; i++) {
         data1.push({
             key: i + 1,
-            name: `${orderState[i].orderBy.firstname.padEnd(30)}${orderState[i].orderBy.lastname
-                }`,
-            products:
-                <>
-
-                    <Link
-                        to={`/admin/orders/${orderState[i]?._id}`}>
-                        View Orders
-                    </Link>
-                </>,
-            amount: orderState[i].paymentIntent.amount,
-            date: moment(orderState[i].createdAt).format("DD/MM/YYYY, hh:mm:ss A"),
+            name: orderState[i].product.title,
+            brand: orderState[i].product.brand,
+            count: orderState[i].count,
+            color: orderState[i].color,
+            amount: orderState[i].product.price,
+            date: orderState[i].product.createdAt,
             action:
                 <>
                     <Link className="fs-3 text-danger" to="/">
@@ -77,14 +89,11 @@ const Orders = () => {
         });
     }
 
-    // <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
-    //     {(orderState[i].products.map((data, index, array) => <li key={data.product?._id}>{data.product?.title}{index !== array.length - 1 && ","}</li>))}
-    // </ul>,
 
 
     return (
         <div>
-            <h3 className="mb-4 title">Orders</h3>
+            <h3 className="mb-4 title">View Order</h3>
             <div>
                 <Table columns={columns} dataSource={data1} />
             </div>
@@ -92,4 +101,4 @@ const Orders = () => {
     )
 }
 
-export default Orders;
+export default ViewOrder;

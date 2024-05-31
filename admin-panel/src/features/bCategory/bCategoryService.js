@@ -13,6 +13,17 @@ const getBCategories = async () => {
     }
 };
 
+const getBCategory = async (bCategoryID) => {
+    try {
+
+        const response = await axiosInstanceWithoutAuth.get(`blog-category/${bCategoryID}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error during fetching a blog category: ", error);
+        throw error;
+    }
+};
+
 const createBCategory = async (bCategoryData) => {
     try {
 
@@ -24,9 +35,32 @@ const createBCategory = async (bCategoryData) => {
     }
 };
 
+const updateBCategory = async (data) => {
+    try {
+        const response = await axiosInstanceWithAuth.put(`blog-category/${data.id}`, { title: data.bCategoryData.title });
+        return response.data;
+    } catch (error) {
+        console.error("Error during updating Blog Category: ", error);
+        throw error;
+    }
+};
+
+const deleteBCategory = async (bCategoryId) => {
+    try {
+        const response = await axiosInstanceWithAuth.delete(`blog-category/${bCategoryId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error during deleting Blog Category: ", error);
+        throw error;
+    }
+};
+
 const bCategoryService = {
     getBCategories,
-    createBCategory
+    getBCategory,
+    createBCategory,
+    updateBCategory,
+    deleteBCategory,
 };
 
 export default bCategoryService;

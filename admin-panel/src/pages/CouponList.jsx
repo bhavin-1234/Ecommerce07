@@ -1,23 +1,55 @@
 import { Table } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BiEdit } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import { AiFillDelete } from 'react-icons/ai';
-import { getCoupons } from '../features/coupon/couponSlice';
+import { deleteCoupon, getCoupons, resetState } from '../features/coupon/couponSlice';
 import moment from 'moment';
+import { Tooltip } from 'react-tooltip';
+import CustomModal from '../components/CustomModal';
+import { toast } from 'react-toastify';
 
 
 
 
-const BrandList = () => {
+const CouponList = () => {
+
+    const [open, setOpen] = useState(false);
+    const [couponId, setCouponId] = useState("");
+
+    const hideModal = () => {
+        setOpen(false);
+    }
+
+    const showModal = (id) => {
+        setOpen(true);
+        setCouponId(id);
+    }
+
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getCoupons())
+        dispatch(resetState());
+        dispatch(getCoupons());
     }, []);
 
     const couponState = useSelector(state => state.coupon.coupons);
+
+    const { isSuccess, isError, deletedCoupon } = useSelector(state => state.coupon);
+
+    useEffect(() => {
+        if (isSuccess && deletedCoupon) {
+            toast.success("Coupon Deleted Successfully!", {
+                onClose: () => {
+                    dispatch(resetState());
+                    dispatch(getCoupons());
+                }
+            });
+        }
+
+    }, [isSuccess, isError, deletedCoupon]);
+
 
     const columns = [
         {
@@ -33,8 +65,16 @@ const BrandList = () => {
             dataIndex: 'discount',
         },
         {
-            title: 'Expiry',
-            dataIndex: 'expiry',
+            title: 'Expiry Date',
+            dataIndex: 'expiryDate',
+        },
+        {
+            title: 'Expiry Time',
+            dataIndex: 'expiryTime',
+        },
+        {
+            title: 'Expiry Date and Time',
+            dataIndex: 'expiryDateTime',
         },
         {
             title: 'Action',
@@ -48,19 +88,47 @@ const BrandList = () => {
             name: couponState[i].name,
             discount: couponState[i].discount,
             // expiry: couponState[i].expiry,
-            expiry: moment(couponState[i].expiry).format("DD/MM/YYYY, hh:mm:ss A"),
+            expiryDate: moment(couponState[i].expiryDate).format("DD/MM/YYYY"),
+            expiryTime: couponState[i].expiryTime,
+            // expiryTime: moment(couponState[i].expiryTime).format("hh:mm:ss A"),
+            expiryDateTime: moment(couponState[i].expiryDateTime).format("DD/MM/YYYY, hh:mm:ss A"),
             // expiry: new Date(couponState[i].expiry).toLocaleString(),
             action:
                 <>
-                    <Link className="fs-3 text-danger" to="/">
+                    <Link
+                        className="fs-3 text-danger"
+                        to={`/admin/coupon/${couponState[i]._id}`}
+                        data-tooltip-id="my-tooltip-1"
+                        data-tooltip-content="Edit"
+                        data-tooltip-place="bottom"
+                        data-tooltip-class-name="rounded-5 px-3 py-0"
+                        data-tooltip-variant="info"
+                    >
                         <BiEdit />
                     </Link>
-                    <Link className="ms-3 fs-3 text-danger" to="/">
+                    <Tooltip id="my-tooltip-1" />
+
+                    <button
+                        onClick={() => showModal(couponState[i]._id)}
+                        type="submit"
+                        className="ms-3 fs-3 text-danger bg-transparent border-0"
+                        data-tooltip-id="my-tooltip-2"
+                        data-tooltip-content="Delete"
+                        data-tooltip-place="bottom"
+                        data-tooltip-class-name="rounded-5 px-3 py-0"
+                        data-tooltip-variant="error"
+                    >
                         <AiFillDelete />
-                    </Link>
+                    </button>
+                    <Tooltip id="my-tooltip-2" />
                 </>
         });
     }
+
+    const handleDelete = () => {
+        dispatch(deleteCoupon(couponId));
+        hideModal();
+    };
 
 
     return (
@@ -69,8 +137,11 @@ const BrandList = () => {
             <div>
                 <Table columns={columns} dataSource={data1} />
             </div>
+            <div>
+                <CustomModal title="Are you sure you want to delete this Coupon?" performAction={() => handleDelete()} open={open} hideModal={hideModal} />
+            </div>
         </div>
     )
 }
 
-export default BrandList;
+export default CouponList;

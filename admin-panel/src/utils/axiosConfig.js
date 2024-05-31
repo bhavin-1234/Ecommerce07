@@ -8,10 +8,19 @@ const axiosInstanceWithAuth = axios.create({
     headers: {
         Authorization: userToken ? `Bearer ${userToken}` : "",
     }
-})
+});
+
+const axiosInstanceWithAuthAndMFD = axios.create({
+    baseURL: base_url,
+    headers: {
+        Authorization: userToken ? `Bearer ${userToken}` : "",
+        "Content-Type": "multipart/form-data",
+
+    }
+});
 
 const axiosInstanceWithoutAuth = axios.create({
     baseURL: base_url
 });
 
-export { axiosInstanceWithAuth, axiosInstanceWithoutAuth };
+export { axiosInstanceWithAuth, axiosInstanceWithoutAuth, axiosInstanceWithAuthAndMFD };

@@ -82,7 +82,7 @@ export const pCategorySlice = createSlice({
                 state.isLoading = false;
                 state.isError = false;
                 state.isSuccess = true;
-                state.fetchedPCategory = action.payload;
+                state.fetchedPCategory = action.payload?.title;
                 state.message = "success";
             })
             .addCase(getPCategory.rejected, (state, action) => {

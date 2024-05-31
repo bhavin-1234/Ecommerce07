@@ -1,22 +1,53 @@
 import { Table } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProducts } from '../features/product/productSlice';
+import { deleteProduct, getProducts, resetState } from '../features/product/productSlice';
 import { Link } from 'react-router-dom';
 import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
+import { Tooltip } from 'react-tooltip';
+import CustomModal from '../components/CustomModal';
+import { toast } from 'react-toastify';
 
-// import { BiEdit } from "react-icons/bi";
-// import { AiFillDelete } from "react-icons/ai";
+
 
 const ProductsList = () => {
+
+    const [open, setOpen] = useState(false);
+    const [productId, setProductId] = useState("");
+
+    const hideModal = () => {
+        setOpen(false);
+    }
+
+    const showModal = (id) => {
+        setOpen(true);
+        setProductId(id);
+    }
+
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getProducts())
-    }, [])
+        dispatch(resetState());
+        dispatch(getProducts());
+    }, []);
 
     const productState = useSelector(state => state.product.products);
+
+    const { isSuccess, isError, deletedProduct } = useSelector(state => state.product);
+
+    useEffect(() => {
+        if (isSuccess && deletedProduct) {
+            toast.success("Product Deleted Successfully!", {
+                onClose: () => {
+                    dispatch(resetState());
+                    dispatch(getProducts());
+                }
+            });
+        }
+
+    }, [isSuccess, isError, deletedProduct]);
+
 
     const columns = [
         {
@@ -63,21 +94,49 @@ const ProductsList = () => {
             color: productState[i].color.join(", "),
             action:
                 <>
-                    <Link className="fs-3 text-danger" to="/">
+                    <Link
+                        className="fs-3 text-danger"
+                        to={`/admin/product/${productState[i]._id}`}
+                        data-tooltip-id="my-tooltip-1"
+                        data-tooltip-content="Edit"
+                        data-tooltip-place="bottom"
+                        data-tooltip-class-name="rounded-5 px-3 py-0"
+                        data-tooltip-variant="info"
+                    >
                         <BiEdit />
                     </Link>
-                    <Link className="ms-3 fs-3 text-danger" to="/">
+                    <Tooltip id="my-tooltip-1" />
+
+                    <button
+                        onClick={() => showModal(productState[i]._id)}
+                        type="submit"
+                        className="ms-3 fs-3 text-danger bg-transparent border-0"
+                        data-tooltip-id="my-tooltip-2"
+                        data-tooltip-content="Delete"
+                        data-tooltip-place="bottom"
+                        data-tooltip-class-name="rounded-5 px-3 py-0"
+                        data-tooltip-variant="error"
+                    >
                         <AiFillDelete />
-                    </Link>
+                    </button>
+                    <Tooltip id="my-tooltip-2" />
                 </>
         });
     }
+
+    const handleDelete = () => {
+        dispatch(deleteProduct(productId));
+        hideModal();
+    };
 
     return (
         <div>
             <h3 className="mb-4 title">Products</h3>
             <div>
                 <Table columns={columns} dataSource={data1} />
+            </div>
+            <div>
+                <CustomModal title="Are you sure you want to delete this Product?" performAction={() => handleDelete()} open={open} hideModal={hideModal} />
             </div>
         </div>
     )

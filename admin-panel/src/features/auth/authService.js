@@ -25,11 +25,22 @@ const getOrders = async () => {
     }
 };
 
+const getOrder = async (id) => {
+    try {
+        const response = await axiosInstanceWithAuth.post(`user/getorderbyuser/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error during fetching all orders: ", error);
+        throw error;
+    }
+};
+
 
 
 const authService = {
     login,
-    getOrders
+    getOrders,
+    getOrder
 };
 
 export default authService;

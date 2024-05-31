@@ -5,22 +5,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { createPCategory, getPCategory, resetState, updatePCategory } from '../features/pCategory/pCategorySlice';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 const AddCategory = () => {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const params = useParams();
     const pCategoryID = params.id;
+
 
     useEffect(() => {
         if (pCategoryID) {
             dispatch(getPCategory(pCategoryID));
-        } else {
+        }
+        else {
             dispatch(resetState());
         }
-    }, [pCategoryID]);
+    }, [pCategoryID, dispatch]);
 
 
 
@@ -35,19 +38,20 @@ const AddCategory = () => {
 
     const formik = useFormik({
         initialValues: {
-            title: fetchedPCategory.title || ""
+            title: fetchedPCategory || ""
         },
         validationSchema,
+        enableReinitialize: true,
         onSubmit: values => {
-            const data = { id: pCategoryID, pCategoryData: values.title }
+            const data = { id: pCategoryID, pCategoryData: values }
             if (pCategoryID) {
                 dispatch(updatePCategory(data));
             } else {
                 dispatch(createPCategory(values));
+                setTimeout(() => {
+                    dispatch(resetState());
+                }, 3000);
             }
-            setTimeout(() => {
-                dispatch(resetState());
-            }, 3000);
         }
     });
 
@@ -60,7 +64,10 @@ const AddCategory = () => {
         });
 
         isSuccess && updatedPCategory && toast.success("Product Category Updated Successfully!", {
-            onClose: () => formik.resetForm()
+            onClose: () => {
+                formik.resetForm();
+                navigate("/admin/category-list");
+            }
         });
 
         isError && toast.error("Something Went Wrong!");
@@ -70,7 +77,7 @@ const AddCategory = () => {
         <div>
             <h3 className="mb-4 title">{pCategoryID ? "Edit" : "Add"} Category</h3>
             <div>
-                <form action="" onSubmit={formik.handleSubmit}>
+                <form onSubmit={formik.handleSubmit}>
                     <CustomInput type="text" label="Enter Product Category" name="title" i_id="title" val={formik.values.title} onCh={formik.handleChange("title")} onBl={formik.handleBlur} />
                     {formik.errors.title && formik.touched.title && <div className='error'>{formik.errors.title}</div>}
                     <button disabled={formik.isSubmitting || !formik.isValid} className='btn btn-success border-0 rounded-3 my-5' type="submit">{pCategoryID ? "Edit" : "Add"} Product Category</button>

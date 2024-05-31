@@ -8,23 +8,44 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllBrands } from "../features/brand/brandSlice";
 import { getPCategories } from "../features/pCategory/pCategorySlice";
 import { toast } from 'react-toastify';
-
-// import Multiselect from "react-widgets/Multiselect";
-// import "react-widgets/styles.css";
 import { Select } from 'antd';
 import { getColors } from "../features/color/colorSlice";
 import Dropzone from 'react-dropzone';
-import { deleteImages, uploadImages } from "../features/image/imageSlice";
-import { createProduct, resetState } from "../features/product/productSlice";
+import { deleteImages, uploadImagesProducts } from "../features/image/imageSlice";
+import { createProduct, getProduct, resetState, updateProduct } from "../features/product/productSlice";
+import { useNavigate, useParams } from 'react-router-dom';
 
 
 const AddProduct = () => {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const params = useParams();
+    const productID = params.id;
+
+
+    useEffect(() => {
+        if (productID) {
+            dispatch(getProduct(productID));
+        }
+        else {
+            dispatch(resetState());
+        }
+    }, [productID, dispatch]);
+
 
 
     const stripHtmlTags = (html) => {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         return doc.body.textContent || "";
     };
+
+    const newProduct = useSelector(state => state.product);
+    const { isError, isSuccess, createdProduct, fetchedProduct, updatedProduct } = newProduct;
+
+
+    console.log(fetchedProduct);
+
 
 
     const validationSchema = Yup.object().shape({
@@ -42,48 +63,61 @@ const AddProduct = () => {
 
     const formik = useFormik({
         initialValues: {
-            title: '',
-            description: '',
-            price: "",
-            quantity: "",
-            tag: "",
-            brand: "",
-            category: "",
-            color: [],
-            images: [],
+            title: fetchedProduct?.title || '',
+            description: fetchedProduct?.description || '',
+            price: fetchedProduct?.price || "",
+            quantity: fetchedProduct?.quantity || "",
+            tag: fetchedProduct?.tag || "",
+            brand: fetchedProduct?.brand || "",
+            category: fetchedProduct?.category || "",
+            color: fetchedProduct?.color || [],
+            images: fetchedProduct?.images || [],
         },
         validationSchema,
+        enableReinitialize: true,
         onSubmit: values => {
             values.description = stripHtmlTags(values.description); // Strip HTML tags
-            console.log(values);
-            dispatch(createProduct(values));
-            // formik.resetForm();
-            setTimeout(() => {
-                dispatch(resetState());
-                // navigate("/admin/product-list");
-            }, 3000);
+            const data = { id: productID, productData: values };
+            if (productID) {
+                dispatch(updateProduct(data));
+            } else {
+                dispatch(createProduct(values));
+                setTimeout(() => {
+                    dispatch(resetState());
+                }, 3000);
+            }
         },
     });
 
 
 
-    const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(getAllBrands());
         dispatch(getPCategories());
         dispatch(getColors());
-
-
     }, []);
 
     const handleDrop = async (acceptedFiles) => {
-        const imageUploadResults = await dispatch(uploadImages(acceptedFiles));
-        const imageData = await imageUploadResults?.payload?.map((image) => ({
-            public_id: image.public_id,
-            url: image.url
-        }));
-        formik.setFieldValue("images", imageData);
+        const folder = "products";
+        const formData = new FormData();
+        acceptedFiles.map(file => formData.append("images", file));
+        formData.append("folder", folder);
+        const imageUploadResults = await dispatch(uploadImagesProducts(formData));
+        // const imageData = await imageUploadResults?.payload?.map((image) => ({
+        //     public_id: image.public_id,
+        //     url: image.url
+        // }));
+        // formik.setFieldValue("images", imageData);
+
+        await imageUploadResults?.payload?.map((image) => (
+            formik.values.images.push(
+                {
+                    public_id: image.public_id,
+                    url: image.url
+                }
+            )
+        ));
     };
 
 
@@ -92,8 +126,6 @@ const AddProduct = () => {
     const colorState = useSelector(state => state.color.colors);
 
 
-    const newProduct = useSelector(state => state.product);
-    const { isError, isSuccess, createdProduct } = newProduct;
 
 
     useEffect(() => {
@@ -102,15 +134,22 @@ const AddProduct = () => {
             onClose: () => formik.resetForm()
         });
 
+        isSuccess && updatedProduct && toast.success("Product Updated Successfully!", {
+            onClose: () => {
+                formik.resetForm();
+                navigate("/admin/product-list");
+            }
+        });
+
         isError && toast.error("Something went wrong!");
 
-    }, [isSuccess, createdProduct, isError]);
+    }, [isSuccess, createdProduct, isError, updatedProduct]);
 
 
 
     return (
         <div>
-            <h3 className="mb-4 title">Add Product</h3>
+            <h3 className="mb-4 title">{productID ? "Edit" : "Add"} Product</h3>
             <div>
                 <form action="" onSubmit={formik.handleSubmit}>
 
@@ -209,7 +248,7 @@ const AddProduct = () => {
                         })}
                     </div>
 
-                    <button disabled={formik.isSubmitting || !formik.isValid} className='btn btn-success border-0 rounded-3 my-5 w-100' type="submit">Add Product</button>
+                    <button disabled={formik.isSubmitting || !formik.isValid} className='btn btn-success border-0 rounded-3 my-5 w-100' type="submit">{productID ? "Edit" : "Add"} Product</button>
 
                 </form>
             </div>

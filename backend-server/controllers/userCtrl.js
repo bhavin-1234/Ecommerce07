@@ -339,9 +339,9 @@ const userCart = async (req, res) => {
     const user = await User.findById(_id);
     // check if user already have product in cart
     const alreadyExistCart = await Cart.findOne({ orderBy: user._id });
-    if (alreadyExistCart) {
-      alreadyExistCart.remove();
-    }
+    // if (alreadyExistCart) {
+    //   alreadyExistCart.remove();
+    // }
     for (let i = 0; i < cart.length; i++) {
       let object = {};
       object.product = cart[i]._id;
@@ -481,12 +481,27 @@ const getOrder = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
-    const userOrders = await Order.find({}).populate(
-      "products.product orderBy"
-    );
+    const userOrders = await Order.find({})
+      .populate("products.product")
+      .populate("orderBy");
     res.json(userOrders);
   } catch (error) {
     console.error("Error while fetching all the orders: ", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+};
+
+const getOrderByUserId = async (req, res) => {
+  const { id } = req.params;
+  try {
+    validateMongoDBID(id);
+    const userOrders = await Order.findById(id).populate("products.product");
+    // const userOrders = await Order.findOne({ orderBy: id }).populate(
+    //   "products.product orderBy"
+    // );
+    res.json(userOrders);
+  } catch (error) {
+    console.error("Error while fetching the order: ", error);
     res.status(500).json({ message: "Internal server Error" });
   }
 };
@@ -537,5 +552,6 @@ module.exports = {
   createOrder,
   getOrder,
   getAllOrders,
+  getOrderByUserId,
   updateOrderStatus,
 };

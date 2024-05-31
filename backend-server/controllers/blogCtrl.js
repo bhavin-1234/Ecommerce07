@@ -51,10 +51,11 @@ const getBlog = async (req, res) => {
     )
       .populate({ path: "likes", select: "-password" })
       .populate({ path: "likes", select: "-password" });
-    res.json({
-      status: "success",
-      updateViews,
-    });
+    // res.json({
+    //   status: "success",
+    //   updateViews,
+    // });
+    res.json(singleBlog);
   } catch (error) {
     console.error("Error while fetching a single Blog: ", error);
     return res.status(500).json({ message: "Internal Server Error" });
