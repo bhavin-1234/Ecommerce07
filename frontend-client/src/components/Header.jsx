@@ -2,10 +2,50 @@ import { Link, NavLink } from "react-router-dom";
 import { BsSearch } from "react-icons/bs";
 import wishlist from "../images/wishlist.svg";
 import compare from "../images/compare.svg";
-import user from "../images/user.svg";
+import userPic from "../images/user.svg";
 import cart from "../images/cart.svg";
 import menu from "../images/menu.svg";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { getCart } from "../features/user/userSlice";
+
 const Header = () => {
+
+  const [totalAmount, setTotalAmount] = useState(null);
+  const dispatch = useDispatch();
+
+  const cartsProducts = useSelector((state) => state.auth?.cartProducts);
+  const { user } = useSelector((state) => state.auth);
+
+
+
+  useEffect(() => {
+    dispatch(getCart());
+  }, [dispatch]);
+
+
+
+  useEffect(() => {
+    const total = Array.isArray(cartsProducts) && cartsProducts?.reduce((accum, item) => {
+      return accum += (item?.price * item?.quantity);
+    }, 0);
+    setTotalAmount(total);
+
+  }, [cartsProducts]);
+
+
+
+
+  const handleLogOut = () => {
+    localStorage.clear();
+    window.location.reload();
+  }
+
+  const token = JSON.parse(localStorage.getItem("digiticToken"))?.token;
+
+
+
+
   return (
     <>
       <header className="header-top-strip py-3">
@@ -68,21 +108,80 @@ const Header = () => {
                     </p>
                   </Link>
                 </div>
+
+
+
+
+                {/* <div>
+                  {
+                    !user ? (<Link to="/login" className="d-flex align-items-center gap-10 text-white">
+                      <img src={userPic} alt="user" />
+                      <p className="mb-0">Login<br />My Account</p>
+                    </Link>) :
+                      (<div className="d-flex align-items-center gap-10 text-white">
+                        <img src={userPic} alt="user" />
+                        <p className="mb-0" style={{ cursor: "default" }}>Welcome<br />{user?.firstname}</p>
+                      </div>)
+                  }
+                </div> */}
+
+
+
                 <div>
-                  <Link to="/login" className="d-flex align-items-center gap-10 text-white">
-                    <img src={user} alt="user" />
-                    <p className="mb-0">
-                      Login
-                      <br /> My Account
-                    </p>
-                  </Link>
+                  {
+                    <Link
+                      to={!user ? `/login` : "/my-profile"}
+                      className="d-flex align-items-center gap-10 text-white"
+                    >
+                      <img src={userPic} alt="user" />
+                      <p className="mb-0">
+                        {!user ? (
+                          <>
+                            Login <br /> My Account
+                          </>
+                        ) : (
+                          <>
+                            Welcome <br /> {user?.firstname}
+                          </>
+                        )
+                        }
+                      </p>
+                    </Link>
+                  }
                 </div>
+
+
+                {/* (<div className="d-flex align-items-center gap-10 text-white">
+                    <img src={userPic} alt="user" />
+                    <p className="mb-0" style={{ cursor: "default" }}>Welcome<br />{user?.firstname}</p>
+                  </div>)
+                  } */}
+
+
+
+
+
+
+                {/* <div>
+                  <Link to="/login" className="d-flex align-items-center gap-10 text-white">
+                    <img src={userPic} alt="user" />
+                    {!user ? <p className="mb-0">Login<br />My Account</p> :
+                      <p className="mb-0">Welcome<br />{user.firstname}</p>}
+                  </Link>
+                </div> */}
                 <div>
                   <Link to="/cart" className="d-flex align-items-center gap-10 text-white">
                     <img src={cart} alt="cart" />
                     <div className="d-flex flex-column gap-10">
-                      <span className="badge bg-white text-dark">0</span>
-                      <p className="mb-0">$ 500</p>
+                      <span className="badge bg-white text-dark">{Array.isArray(cartsProducts) && cartsProducts?.length}</span>
+                      <p className="mb-0">{Array.isArray(cartsProducts) && Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD"
+                      }).format(totalAmount)}</p>
+                      {/* <p className="mb-0">{totalAmount ? Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD"
+                      }).format(totalAmount) : `$ 0`}</p> */}
                     </div>
                   </Link>
                 </div>
@@ -90,49 +189,62 @@ const Header = () => {
             </div>
           </div>
         </div>
-      </header >
+      </header>
       <header className="header-bottom py-3">
         <div className="container-xxl">
           <div className="row">
             <div className="col-12">
-              <div className="menu-bottom d-flex align-items-center gap-30">
-                <div>
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-secondary dropdown-toggle bg-transparent border-0 gap-15 d-flex align-items-center me-5"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <img src={menu} alt="menu" />
-                      <span className="d-inline-block">Shop Categories</span>
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <Link className="dropdown-item text-white" to="">
-                          Action
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item text-white" to="">
-                          Another action
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="dropdown-item text-white" to="">
-                          Something else here
-                        </Link>
-                      </li>
-                    </ul>
+              <div className="menu-bottom d-flex align-items-center justify-content-between gap-30">
+                <div className="d-flex align-items-center">
+                  <div>
+                    <div className="dropdown">
+                      <button
+                        className="btn btn-secondary dropdown-toggle bg-transparent border-0 gap-15 d-flex align-items-center me-5"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <img src={menu} alt="menu" />
+                        <span className="d-inline-block">Shop Categories</span>
+                      </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <Link className="dropdown-item text-white" to="">
+                            Action
+                          </Link>
+                        </li>
+                        <li>
+                          <Link className="dropdown-item text-white" to="">
+                            Another action
+                          </Link>
+                        </li>
+                        <li>
+                          <Link className="dropdown-item text-white" to="">
+                            Something else here
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="menu-links">
+                    <div className="d-flex align-items-center gap-15">
+                      <NavLink to="/">Home</NavLink>
+                      <NavLink to="/product">Our Store</NavLink>
+                      <NavLink to="/blogs">Blogs</NavLink>
+                      <NavLink to="/my-orders">My Orders</NavLink>
+                      <NavLink to="/contact">Contact</NavLink>
+                    </div>
                   </div>
                 </div>
-                <div className="menu-links">
-                  <div className="d-flex align-items-center gap-15">
-                    <NavLink to="/">Home</NavLink>
-                    <NavLink to="/product">Our Store</NavLink>
-                    <NavLink to="/blogs">Blogs</NavLink>
-                    <NavLink to="/contact">Contact</NavLink>
-                  </div>
+                <div>
+                  {
+                    token &&
+                    <button type="button" className="text-white border-0 rounded-3 p-2 text-uppercase ms-auto" style={{
+                      backgroundColor: "#febd69"
+                    }} onClick={() => handleLogOut()}>
+                      Logout
+                    </button>
+                  }
                 </div>
               </div>
             </div>

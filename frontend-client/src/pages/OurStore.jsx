@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Meta from "../components/Meta";
 import BreadCrumb from "../components/BreadCrumb";
 import ReactStars from "react-rating-stars-component";
@@ -10,10 +11,19 @@ import gr2 from '../images/gr2.svg';
 import gr3 from '../images/gr3.svg';
 import gr4 from '../images/gr4.svg';
 import Container from "../components/Container";
+import { getProducts } from "../features/products/productSlice";
+
 
 const OurStore = () => {
+    const dispatch = useDispatch();
     const [grid, setGrid] = useState(4);
-    console.log(grid);
+    useEffect(() => {
+        dispatch(getProducts());
+    }, []);
+
+    const productState = useSelector(state => state.product.products);
+
+
     return (
         <>
             <Meta title="Oue Store" />
@@ -157,7 +167,7 @@ const OurStore = () => {
                         </div>
                         <div className="products-list pb-5">
                             <div className="d-flex flex-wrap align-items-center gap-10">
-                                <ProductCard grid={grid} />
+                                <ProductCard data={productState} grid={grid} />
                             </div>
                         </div>
                     </div>

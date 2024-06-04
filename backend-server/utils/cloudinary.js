@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
 dotenv.config();
-const cloudinary = require("cloudinary");
+const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -15,7 +15,10 @@ const cloudinaryUploadImg = async (fileToUploads, folder) => {
       {
         folder: folder,
         resource_type: "auto",
-        transformation: [{ width: 300, height: 300, crop: "limit", quality: "auto", fetch_format: "auto", format: "jpeg" }]
+        transformation: [{
+          width: 300, height: 300, crop: "limit", quality: "auto"
+          , fetch_format: "auto", format: "jpeg"
+        }]
       },
       (error, result) => {
         if (error) return reject(error);
@@ -35,7 +38,7 @@ const cloudinaryDeleteImg = async (publicId) => {
     cloudinary.uploader.destroy(publicId, (error, result) => {
       if (error) return reject(error);
       resolve(
-        // result
+        result
         // {
         //   url: result.secure_url,
         //   asset_id: result.asset_id,

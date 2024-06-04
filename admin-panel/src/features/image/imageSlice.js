@@ -11,7 +11,7 @@ const initialState = {
     message: ""
 };
 
-export const uploadImagesBlogs = createAsyncThunk("images/upload/blogs", async (formData, thunkAPI) => {
+export const uploadImagesBlogs = createAsyncThunk("images/upload-blogs", async (formData, thunkAPI) => {
     try {
         return await imageService.uploadImagesBlogs(formData);
     } catch (error) {
@@ -19,7 +19,7 @@ export const uploadImagesBlogs = createAsyncThunk("images/upload/blogs", async (
     }
 });
 
-export const uploadImagesProducts = createAsyncThunk("images/upload/products", async (formData, thunkAPI) => {
+export const uploadImagesProducts = createAsyncThunk("images/upload-products", async (formData, thunkAPI) => {
     try {
         return await imageService.uploadImagesProducts(formData);
     } catch (error) {
@@ -28,11 +28,9 @@ export const uploadImagesProducts = createAsyncThunk("images/upload/products", a
 });
 
 
-export const deleteImages = createAsyncThunk("images/delete", async (deleteId, thunkAPI) => {
-    console.log(deleteId);
+export const deleteImages = createAsyncThunk("images/delete", async (folderWithID, thunkAPI) => {
     try {
-
-        return await imageService.deleteImages(deleteId);
+        return await imageService.deleteImages(folderWithID);
     } catch (error) {
         return thunkAPI.rejectWithValue(error);
     }
@@ -59,7 +57,7 @@ export const imageSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
-                state.images = null;
+                // state.images = null;
                 state.message = action.error;
             })
             .addCase(uploadImagesProducts.pending, (state) => {
@@ -69,31 +67,31 @@ export const imageSlice = createSlice({
                 state.isLoading = false;
                 state.isError = false;
                 state.isSuccess = true;
-                state.productImages = action.payload;
+                state.productImages.push(action.payload);
                 state.message = "success"
             })
             .addCase(uploadImagesProducts.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
-                state.images = null;
+                // state.images = null;
                 state.message = action.error;
             })
             .addCase(deleteImages.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(deleteImages.fulfilled, (state, action) => {
+            .addCase(deleteImages.fulfilled, (state) => {
                 state.isLoading = false;
                 state.isError = false;
                 state.isSuccess = true;
-                state.images = action.payload;
+                // state.images = action.payload;
                 state.message = "success"
             })
             .addCase(deleteImages.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
-                state.images = action.payload;
+                // state.images = action.payload;
                 state.message = action.error;
             })
     }

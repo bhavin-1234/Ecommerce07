@@ -81,19 +81,16 @@ const AddBlog = () => {
     const handleDrop = async (acceptedFiles) => {
         const folder = "blogs";
         const formData = new FormData();
-        acceptedFiles.map(file => formData.append("images", file));
+        acceptedFiles.map(file => formData.append("blog-images", file));
         formData.append("folder", folder);
         console.log(formData);
         const imageUploadResults = await dispatch(uploadImagesBlogs(formData));
-        await imageUploadResults?.payload?.map((image) => (
-            formik.values.images.push(
+        const imageData = await imageUploadResults?.payload?.map((image) => ({
+            public_id: image.public_id,
+            url: image.url
+        }));
+        formik.setFieldValue("images", [...formik.values.images, ...imageData]);
 
-                {
-                    public_id: image.public_id,
-                    url: image.url
-                }
-            )
-        ));
 
         // const imageData = await imageUploadResults?.payload?.map((image) => ({
         //     public_id: image.public_id,
@@ -137,7 +134,10 @@ const AddBlog = () => {
     const blogCategoryState = useSelector(state => state.bCategory.blogCategories);
 
 
-
+    const handleDeleteImage = async (imageId) => {
+        await dispatch(deleteImages(imageId));
+        formik.setFieldValue("images", formik.values.images.filter(image => image.public_id !== imageId))
+    };
 
 
     return (
@@ -178,12 +178,12 @@ const AddBlog = () => {
                         {formik.errors.images && formik.touched.images && <div className="error">{formik.errors.images}</div>}
                     </div>
                     <div className="showImages d-flex gap-3 flex-wrap mt-3">
-                        {formik?.values?.images?.map((image, index) => {
-                            return <div key={index} className="position-relative">
-                                <button type="button" className="btn-close position-absolute fs-6 end-0 m-2" style={{ cursor: "pointer" }} onClick={() => dispatch(deleteImages(image.public_id))}></button>
+                        {formik?.values?.images?.map((image, index) => (
+                            <div key={index} className="position-relative">
+                                <button type="button" className="btn-close position-absolute fs-6 end-0 m-2" style={{ cursor: "pointer" }} onClick={() => handleDeleteImage(image.public_url)}></button>
                                 <img src={image?.url} alt="image" style={{ width: "200px", height: "200px", borderRadius: "10px" }} />
                             </div>
-                        })}
+                        ))}
                     </div>
 
                     <button disabled={formik.isSubmitting || !formik.isValid} type="submit" className="btn btn-success border-0 rounded-3 my-5">{blogID ? "Edit" : "Add"} to Blog</button>

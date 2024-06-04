@@ -16,9 +16,9 @@ const uploadImagesProducts = async (formData) => {
     return responce.data;
 };
 
-const deleteImages = async (deleteId) => {
-    console.log(deleteId);
-    const responce = await axiosInstanceWithAuth.delete(`image/delete/${deleteId}`);
+const deleteImages = async (folderWithID) => {
+    // const responce = await axiosInstanceWithAuth.delete(`image/delete/${folderWithID}`);
+    const responce = await axiosInstanceWithAuth.delete(`image/delete/${folderWithID?.folder}/${folderWithID?.id}`);
     return responce.data;
 };
 

@@ -1,6 +1,5 @@
 import axios from "axios";
 import { base_url } from "./base_url.js";
-
 const userToken = JSON.parse(localStorage.getItem("user"))?.token;
 
 const axiosInstanceWithAuth = axios.create({

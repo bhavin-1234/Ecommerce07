@@ -5,10 +5,10 @@ const {
 const fs = require("fs");
 
 const uploadImages = async (req, res) => {
-    const folder = req.body.folder;
+    const folder = req.body?.folder;
     try {
         const uploader = (path) => cloudinaryUploadImg(path, folder);
-        const urls = [];
+        let urls = [];
         const files = req.files;
         for (const file of files) {
             const { path } = file;
@@ -28,10 +28,16 @@ const uploadImages = async (req, res) => {
     }
 };
 
+
+
 const deleteImages = async (req, res) => {
-    const { id } = req.params;
+    const { folder, id } = req.params;
+    // const { id } = req.params;
+    // console.log(folder.concat("/", id));
     try {
-        await cloudinaryDeleteImg(id);
+        // await cloudinaryDeleteImg(id);
+        await cloudinaryDeleteImg(folder.concat("/", id));
+        // await cloudinaryDeleteImg(id);
         res.json({ message: "Deleted" });
     } catch (error) {
         console.error("Error while deleting images: ", error);

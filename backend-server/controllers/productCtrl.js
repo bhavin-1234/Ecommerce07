@@ -50,7 +50,7 @@ const deleteAProduct = async (req, res) => {
 const getAProduct = async (req, res) => {
   const { id } = req.params;
   try {
-    const findProduct = await Product.findById(id);
+    const findProduct = await Product.findById(id).populate("color");
     res.json(findProduct);
   } catch (error) {
     console.error("Error while fetching a single product: ", error);

@@ -13,7 +13,7 @@ const Meta = (props) => {
 }
 
 Meta.propTypes = {
-    title: propTypes.string.isRequired
+    title: propTypes.string
 }
 
 export default Meta;

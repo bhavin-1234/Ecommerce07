@@ -1,4 +1,5 @@
 // export const copyToClipboard = (text) => {
+import { toast } from 'react-toastify';
 //     try {
 //         var textField = document.createElement('textarea')
 //         textField.innerText = text
@@ -18,9 +19,9 @@
 export const copyToClipboard = async (text) => {
     try {
         await navigator.clipboard.writeText(text);
-        alert("copied to clipboard");
+        toast.success("copied to clipboard Successfully!");
     } catch (error) {
         console.error("Unable to copy to clipboard", error);
-        alert("copy to clipboard failed!");
+        toast.error("Something Went Wrong!");
     }
 };

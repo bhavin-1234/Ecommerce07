@@ -17,7 +17,7 @@ const BreadCrumb = (props) => {
 }
 
 BreadCrumb.propTypes = {
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
 };
 
 export default BreadCrumb;

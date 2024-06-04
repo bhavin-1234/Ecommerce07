@@ -14,7 +14,7 @@ router.post(
     "/upload/blog-image",
     authMiddleware,
     isAdmin,
-    uploadPhoto("blogs").array("images", 10),
+    uploadPhoto("blogs").array("blog-images", 10),
     uploadImages
 );
 
@@ -22,11 +22,13 @@ router.post(
     "/upload/product-image",
     authMiddleware,
     isAdmin,
-    uploadPhoto("products").array("images", 10),
+    uploadPhoto("products").array("product-images", 10),
     uploadImages
 );
 
 
-router.delete("/delete/blogs/:id", authMiddleware, isAdmin, deleteImages);
+// router.delete("/delete/:id", authMiddleware, isAdmin, deleteImages);
+
+router.delete("/delete/:folder/:id", authMiddleware, isAdmin, deleteImages);
 
 module.exports = router;

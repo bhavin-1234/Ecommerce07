@@ -1,10 +1,35 @@
 import Meta from "../components/Meta";
 import BreadCrumb from "../components/BreadCrumb";
-import { Link } from "react-router-dom";
 import Container from "../components/Container";
 import CustomInput from "../components/CustomInput";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+
+
 
 const ForgotPassword = () => {
+
+    const initialValues = {
+        email: "",
+    };
+
+    const validationSchema = Yup.object().shape({
+        email: Yup.string().email("Invalid email format!").required("Email is required!"),
+    });
+
+    const formik = useFormik({
+        initialValues,
+        validationSchema,
+        onSubmit: (values) => {
+            // dispatch(loginUser(values));
+            // formik.resetForm();
+            // navigate("/");
+        }
+    });
+
+
     return (
         <>
             <Meta title="Forgot Password" />
@@ -15,8 +40,17 @@ const ForgotPassword = () => {
                         <div className="auth-card">
                             <h3 className="text-center mb-3">Reset Your Password</h3>
                             <p className="text-center mt-2 mb-3">We will send you an email to reset your password</p>
-                            <form action="" className="d-flex flex-column gap-15">
-                                <CustomInput type="email" name="email" placeholder="Email" />
+                            <form className="d-flex flex-column gap-15" onSubmit={formik.handleSubmit}>
+                                <CustomInput
+                                    type="email"
+                                    name="email"
+                                    label="Email"
+                                    val={formik.values.email}
+                                    onCh={formik.handleChange("email")}
+                                    onBl={formik.handleBlur}
+                                    i_id="email"
+                                />
+                                {formik.errors.email && formik.touched.email && <div className="error">{formik.errors.email}</div>}
                                 <div>
                                     <div className="mt-3 d-flex flex-column justify-content-center align-items-center gap-15">
                                         <button className="button border-0" type="submit">Submit</button>

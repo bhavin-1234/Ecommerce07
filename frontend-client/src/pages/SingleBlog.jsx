@@ -1,24 +1,40 @@
 import Meta from "../components/Meta";
 import BreadCrumb from "../components/BreadCrumb";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { HiOutlineArrowLeft } from "react-icons/hi";
-import blog1 from '../images/blog-1.jpg';
+// import blog1 from '../images/blog-1.jpg';
 import Container from "../components/Container";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getBlog } from "../features/blogs/blogSlice";
 
 
 const SingleBlog = () => {
+
+  const dispatch = useDispatch();
+  const params = useParams();
+  const blogId = params.id;
+
+  useEffect(() => {
+    if (blogId) {
+      dispatch(getBlog(blogId));
+    }
+  }, [blogId]);
+
+  const { fetchedBlog } = useSelector(state => state.blog);
+
   return (
     <>
-      <Meta title="Dynamic Blog Name" />
-      <BreadCrumb title="Dynamic Blog Name" />
+      <Meta title={fetchedBlog?.title} />
+      <BreadCrumb title={fetchedBlog?.title} />
       <Container class1="blog-wrapper home-wrapper-2 py-5">
         <div className="row">
           <div className="col-12">
             <div className="single-blog-card">
               <Link to="/blogs" className="d-flex align-items-center gap-10"><HiOutlineArrowLeft className="fs-4" />Go back to Blogs</Link>
-              <h3 className="title">A Beautiful Sunday Morning Renaissance</h3>
-              <img src={blog1} className="img-fluid w-100 my-4" alt="blog" />
-              <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Neque ex veritatis architecto ea et odio quam culpa minus, alias, iure a quasi tempore rerum asperiores. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eveniet ex ab sapiente dolore ratione nam, minus dolores, et earum, ducimus mollitia quia? Repellat, esse et! Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore a eos sit soluta, molestiae quasi.</p>
+              <h3 className="title">{fetchedBlog?.title}</h3>
+              <img src={fetchedBlog?.images[0].url} className="img-fluid w-100 my-4" alt="blog" />
+              <p>{fetchedBlog?.description}</p>
             </div>
           </div>
         </div>

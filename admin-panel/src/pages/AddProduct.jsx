@@ -44,7 +44,7 @@ const AddProduct = () => {
     const { isError, isSuccess, createdProduct, fetchedProduct, updatedProduct } = newProduct;
 
 
-    console.log(fetchedProduct);
+    // console.log(fetchedProduct);
 
 
 
@@ -101,23 +101,24 @@ const AddProduct = () => {
     const handleDrop = async (acceptedFiles) => {
         const folder = "products";
         const formData = new FormData();
-        acceptedFiles.map(file => formData.append("images", file));
+        acceptedFiles.map(file => formData.append("product-images", file));
         formData.append("folder", folder);
         const imageUploadResults = await dispatch(uploadImagesProducts(formData));
-        // const imageData = await imageUploadResults?.payload?.map((image) => ({
-        //     public_id: image.public_id,
-        //     url: image.url
-        // }));
-        // formik.setFieldValue("images", imageData);
+        console.log(imageUploadResults);
+        const imageData = await imageUploadResults?.payload?.map((image) => ({
+            public_id: image.public_id,
+            url: image.url
+        }));
+        formik.setFieldValue("images", [...formik.values.images, ...imageData]);
 
-        await imageUploadResults?.payload?.map((image) => (
-            formik.values.images.push(
-                {
-                    public_id: image.public_id,
-                    url: image.url
-                }
-            )
-        ));
+        // await imageUploadResults?.payload?.map((image) => (
+        //     formik.values.images.push(
+        //         {
+        //             public_id: image.public_id,
+        //             url: image.url
+        //         }
+        //     )
+        // ));
     };
 
 
@@ -145,6 +146,19 @@ const AddProduct = () => {
 
     }, [isSuccess, createdProduct, isError, updatedProduct]);
 
+
+    const handleDeleteImage = async (imageId) => {
+        const extractFromImageID = imageId.split("/");
+        const folderWithID = {
+            folder: extractFromImageID[0],
+            id: extractFromImageID[1],
+        }
+        // console.log(folderWithID);
+
+        // await dispatch(deleteImages(imageId));
+        await dispatch(deleteImages(folderWithID));
+        formik.setFieldValue("images", formik.values.images.filter(image => image.public_id !== imageId))
+    };
 
 
     return (
@@ -240,12 +254,14 @@ const AddProduct = () => {
                     </div>
 
                     <div className="showImages d-flex gap-3 flex-wrap mt-3">
-                        {formik?.values?.images?.map((image, index) => {
-                            return <div key={index} className="position-relative">
-                                <button type="button" className="btn-close position-absolute fs-6 end-0 m-2" style={{ cursor: "pointer" }} onClick={() => dispatch(deleteImages(image.public_url))}></button>
+                        {formik?.values?.images?.map((image, index) => (
+                            <div key={index} className="position-relative">
+                                <button
+                                    type="button" className="btn-close position-absolute fs-6 end-0 m-2"
+                                    style={{ cursor: "pointer" }} onClick={() => handleDeleteImage(image?.public_id)}></button>
                                 <img src={image.url} alt="image" style={{ width: "200px", height: "200px", borderRadius: "10px" }} />
                             </div>
-                        })}
+                        ))}
                     </div>
 
                     <button disabled={formik.isSubmitting || !formik.isValid} className='btn btn-success border-0 rounded-3 my-5 w-100' type="submit">{productID ? "Edit" : "Add"} Product</button>
