@@ -4,9 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import wish from "../images/wish.svg";
 // import watch from "../images/watch.jpg";
 // import speaker from "../images/speaker.jpg";
-import prodcompare from "../images/prodcompare.svg";
+// import prodcompare from "../images/prodcompare.svg";
 import view from "../images/view.svg";
-import addCart from "../images/add-cart.svg";
+// import addCart from "../images/add-cart.svg";
 import { useDispatch } from "react-redux";
 import { addToWishList } from "../features/products/productSlice";
 
@@ -67,15 +67,15 @@ const ProductCard = (props) => {
                         </div>
                         <div className="action-bar position-absolute">
                             <div className="d-flex flex-column gap-15">
-                                <button className="border-0 bg-transparent">
+                                {/* <button className="border-0 bg-transparent">
                                     <img src={prodcompare} alt="compare" />
-                                </button>
+                                </button> */}
                                 <button className="border-0 bg-transparent">
                                     <img onClick={() => navigate(`/product/${product?._id}`)} src={view} alt="view" />
                                 </button>
-                                <button className="border-0 bg-transparent">
+                                {/* <button className="border-0 bg-transparent">
                                     <img src={addCart} alt="addcart" />
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                     </div>
@@ -90,10 +90,10 @@ ProductCard.propTypes = {
     grid: propTypes.number,
     data: propTypes.arrayOf(
         propTypes.shape({
-            _id: propTypes.string.isRequired,
+            _id: propTypes.string,
             images: propTypes.arrayOf(propTypes.shape({
-                url: propTypes.string.isRequired
-            })).isRequired,
+                url: propTypes.string
+            })),
             brand: propTypes.string,
             title: propTypes.string,
             totalRating: propTypes.string,

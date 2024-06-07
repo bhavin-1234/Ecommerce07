@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BiArrowBack } from "react-icons/bi";
 import Container from "../components/Container";
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,6 +7,7 @@ import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { axiosInstanceWithAuth } from "../utils/axiosConfig";
 import { createOrder } from "../features/user/userSlice";
+import { toast } from "react-toastify";
 
 const Checkout = () => {
 
@@ -17,6 +18,8 @@ const Checkout = () => {
     const [totalAmount, setTotalAmount] = useState(null);
 
     const [productsFromCart, setProductsFromCart] = useState([]);
+
+    const navigate = useNavigate("");
 
 
 
@@ -147,6 +150,7 @@ const Checkout = () => {
 
                 const result = await axiosInstanceWithAuth.post("user/order/payment-verification", data);
 
+
                 // setPaymentInfo({
                 //     razorpayPaymentId: response.razorpay_payment_id,
                 //     razorpayOrderId: response.razorpay_order_id,
@@ -160,13 +164,18 @@ const Checkout = () => {
                     orderItems: productsFromCart,
                     // paymentInfo: paymentInfo,
                     paymentInfo: {
-                        razorpayPaymentId: response.razorpay_payment_id,
-                        razorpayOrderId: response.razorpay_order_id,
+                        razorpayPaymentId: result.data.razorpayPaymentId,
+                        razorpayOrderId: result.data.razorpayOrderId,
                     },
                     shippingInfo
                 }));
 
+
+
+
             },
+
+
             prefill: {
                 name: "Dev Corner",
                 email: "devcorner@example.com",
@@ -240,7 +249,24 @@ const Checkout = () => {
         formik.setFieldValue("city", "");
     }
 
-    const user = JSON.parse(localStorage.getItem("digiticToken"));
+    const { user, createdOrder, isSuccess } = useSelector(state => state.auth);
+
+
+
+
+
+    useEffect(() => {
+        if (isSuccess && createdOrder) {
+            toast.success("Payment Successfully!", {
+                onClose: () => {
+                    formik.resetForm();
+                    navigate("/my-orders");
+                }
+            });
+        }
+    }, [isSuccess, createdOrder]);
+
+
 
 
 
@@ -263,7 +289,7 @@ const Checkout = () => {
                                 </ol>
                             </nav>
                             <h4 className="title total">Contact Information</h4>
-                            <p className="user-details total">{`${user.firstname} ${user.lastname} (${user.email})`}</p>
+                            <p className="user-details total">{`${user?.firstname} ${user?.lastname} (${user?.email})`}</p>
                             {/* <p className="user-details total">Navdeep Dahiya (monud0232@gmail.com)</p> */}
                             <h4 className="mb-3">Shipping Address</h4>
                             <form onSubmit={formik.handleSubmit} className="d-flex flex-wrap gap-15 justify-content-between">
@@ -317,7 +343,7 @@ const Checkout = () => {
                                     <div className="d-flex justify-content-between align-items-center">
                                         <Link to="/cart" className="text-dark"><BiArrowBack className="me-2" />Return to Cart</Link>
                                         <div>
-                                            <Link to="/cart" className="button border-0" >Continue to Shipping</Link>
+                                            <Link to="/cart" className="button border-0" >Continue to Shopping</Link>
                                             <button className="button border-0 ms-3" type="submit">Place Order</button>
                                         </div>
                                     </div>
@@ -333,7 +359,7 @@ const Checkout = () => {
                                     <div className="w-75 d-flex gap-30">
                                         <div className="w-25 position-relative">
                                             <span style={{ top: "0", left: "100%", transform: "translate(-50%, -50%)" }} className="badge bg-secondary text-white rounded-circle py-1  position-absolute">{cartItem?.quantity}</span>
-                                            <img src={cartItem?.productId?.images[0]?.url} className="rounded-3" width={100} height={100} alt="watch" />
+                                            <img src={cartItem?.productId?.images?.[0]?.url} className="rounded-3" width={100} height={100} alt="watch" />
                                         </div>
                                         <div>
                                             <h5 className="total-price">{cartItem?.productId?.title}</h5>

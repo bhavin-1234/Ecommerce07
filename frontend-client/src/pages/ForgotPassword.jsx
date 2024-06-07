@@ -6,10 +6,12 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { forgotPasswordToken } from "../features/user/userSlice";
 
 
 
 const ForgotPassword = () => {
+    const dispatch = useDispatch();
 
     const initialValues = {
         email: "",
@@ -23,7 +25,7 @@ const ForgotPassword = () => {
         initialValues,
         validationSchema,
         onSubmit: (values) => {
-            // dispatch(loginUser(values));
+            dispatch(forgotPasswordToken(values));
             // formik.resetForm();
             // navigate("/");
         }

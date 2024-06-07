@@ -14,9 +14,9 @@ import service02 from '../images/service-02.png';
 import service03 from '../images/service-03.png';
 import service04 from '../images/service-04.png';
 import service05 from '../images/service-05.png';
-import camera from '../images/camera.jpg';
-import tv from '../images/tv.jpg';
-import headphone from '../images/headphone.jpg';
+// import camera from '../images/camera.jpg';
+// import tv from '../images/tv.jpg';
+// import headphone from '../images/headphone.jpg';
 import famous01 from '../images/famous-01.webp';
 import famous02 from '../images/famous-02.webp';
 import famous03 from '../images/famous-03.webp';
@@ -181,7 +181,7 @@ const Home = () => {
         </div>
       </Container>
 
-
+      {/* 
 
       <Container class1="home-wrapper-2 py-5">
         <div className="row">
@@ -246,7 +246,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </Container>
+      </Container> */}
 
 
 
@@ -257,7 +257,7 @@ const Home = () => {
             <h3 className="section-heading">Featured Collection</h3>
           </div>
           <div className="row">
-            <ProductCard data={productState.filter(el => el.tag === "featured")} />
+            <ProductCard data={productState?.filter(el => el.tag === "featured")} />
           </div>
         </div>
       </Container>
@@ -328,7 +328,7 @@ const Home = () => {
           </div>
         </div>
         <div className="row">
-          {productState.map((product, index) => {
+          {productState?.map((product, index) => {
             if (product.tag === "special") {
               return (
                 <SpecialProduct
@@ -369,7 +369,7 @@ const Home = () => {
           </div>
         </div>
         <div className="row">
-          <ProductCard data={productState.filter(el => el.tag === "popular")} />
+          <ProductCard data={productState?.filter(el => el.tag === "popular")} />
           {/* {productState.map((product, index, array) => {
             if (product.tag === "popular") {
               return (

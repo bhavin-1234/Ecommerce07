@@ -82,6 +82,30 @@ export const updateUser = createAsyncThunk("user/update-user", async (userData, 
     }
 });
 
+export const forgotPasswordToken = createAsyncThunk("user/forgot-password", async (data, thunkAPI) => {
+    try {
+        return await userService.forgotPassToken(data);
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error);
+    }
+});
+
+export const resetPassWord = createAsyncThunk("user/reset-password", async (data, thunkAPI) => {
+    try {
+        return await userService.resetPassWord(data);
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error);
+    }
+});
+
+export const emptyCart = createAsyncThunk("user/empty-cart", async (thunkAPI) => {
+    try {
+        return await userService.emptyCart();
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error);
+    }
+});
+
 export const resetState = createAction("Reset_all");
 
 const initialState = {
@@ -107,7 +131,7 @@ export const authSlice = createSlice({
                 state.isSuccess = true;
                 state.createdUser = action.payload;
                 state.message = "success";
-                if (state.isSuccess && state.createdUser) {
+                if (state.isSuccess) {
                     toast.success("User Registered Successfully!"
                     );
                 }
@@ -116,9 +140,12 @@ export const authSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
-                state.message = action.error;
+                state.createdUser = null;
+                state.message = action.error.message;
                 if (state.isError) {
-                    toast.error("Something Went Wrong!");
+                    toast.error(action.payload.message);
+                    // toast.error(action.payload.message);
+                    // toast.error(action.payload.response.data.message);
                 }
             })
             .addCase(loginUser.pending, (state) => {
@@ -130,8 +157,9 @@ export const authSlice = createSlice({
                 state.isSuccess = true;
                 state.loggedInUser = action.payload;
                 state.message = "success";
+                localStorage.setItem("digiticToken", JSON.stringify(action.payload));
                 state.user = JSON.parse(localStorage.getItem("digiticToken")) || null;
-                if (state.isSuccess && state.loggedInUser) {
+                if (state.isSuccess) {
                     toast.success("User Logged In Successfully!"
                     );
                 }
@@ -140,9 +168,10 @@ export const authSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
-                state.message = action.error;
-                if (state.isError) {
-                    toast.error("Something Went Wrong!");
+                state.loggedInUser = null;
+                state.message = action.error.message;
+                if (state.isError === true) {
+                    toast.error(action.payload.message);
                 }
             })
             .addCase(getUserWishList.pending, (state) => {
@@ -170,12 +199,18 @@ export const authSlice = createSlice({
                 state.isSuccess = true;
                 state.addedToCart = action.payload;
                 state.message = "success";
+                if (state.isSuccess) {
+                    toast.success("Product Addetd to Cart Successfully!");
+                }
             })
             .addCase(addToCart.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
                 state.message = action.error;
+                if (state.isError) {
+                    toast.success(action.error);
+                }
             })
             .addCase(getCart.pending, (state) => {
                 state.isLoading = true;
@@ -202,12 +237,18 @@ export const authSlice = createSlice({
                 state.isSuccess = true;
                 state.removedProductCart = action.payload;
                 state.message = "success";
+                if (state.isSuccess) {
+                    toast.success("Product removed From Cart Successfully!");
+                }
             })
             .addCase(removeProductFromCart.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
                 state.message = action.error;
+                if (state.isError) {
+                    toast.success(action.error);
+                }
             })
             .addCase(updateProductQuantityFromCart.pending, (state) => {
                 state.isLoading = true;
@@ -218,12 +259,16 @@ export const authSlice = createSlice({
                 state.isSuccess = true;
                 state.updatedProductCart = action.payload;
                 state.message = "success";
+                if (state.isSuccess) {
+                    toast.success("Product updated From Cart Successfully!");
+                }
             })
             .addCase(updateProductQuantityFromCart.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
                 state.message = action.error;
+
             })
             .addCase(createOrder.pending, (state) => {
                 state.isLoading = true;
@@ -266,6 +311,16 @@ export const authSlice = createSlice({
                 state.isSuccess = true;
                 state.updatedUser = action.payload;
                 state.message = "success";
+                const currentUserData = JSON.parse(localStorage.getItem("digiticToken"));
+                const updatedUserData = {
+                    id: currentUserData?.id,
+                    firstname: action?.payload?.firstname,
+                    lastname: action?.payload?.lastname,
+                    mobile: action?.payload?.mobile,
+                    email: action?.payload?.email,
+                    token: currentUserData?.token
+                };
+                localStorage.setItem("digiticToken", JSON.stringify(updatedUserData));
                 state.user = JSON.parse(localStorage.getItem("digiticToken")) || null;
                 if (state.isSuccess) {
                     toast.success("Profile Updated Successfully!");
@@ -276,9 +331,69 @@ export const authSlice = createSlice({
                 state.isError = true;
                 state.isSuccess = false;
                 state.message = action.error;
+                if (state.isError) {
+                    toast.error("Something Went Wrong!");
+                }
+            })
+            .addCase(forgotPasswordToken.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(forgotPasswordToken.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.isSuccess = true;
+                state.forgotpasstoken = action.payload;
+                state.message = "success";
+                if (state.isSuccess) {
+                    toast.success("Forgot Password Email Sent Successfully!");
+                }
+            })
+            .addCase(forgotPasswordToken.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.isSuccess = false;
+                state.message = action.error;
                 if (!state.isSuccess) {
                     toast.error("Something Went Wrong!");
                 }
+            })
+            .addCase(resetPassWord.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(resetPassWord.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.isSuccess = true;
+                state.resetedpassword = action.payload;
+                state.message = "success";
+                if (state.isSuccess) {
+                    toast.success("Password Updated Successfully!");
+                }
+            })
+            .addCase(resetPassWord.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.isSuccess = false;
+                state.message = action.error;
+                if (!state.isSuccess) {
+                    toast.error("Something Went Wrong!");
+                }
+            })
+            .addCase(emptyCart.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(emptyCart.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.isSuccess = true;
+                state.deletedCart = action.payload;
+                state.message = "success";
+            })
+            .addCase(emptyCart.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.isSuccess = false;
+                state.message = action.error;
             })
             .addCase(resetState, () => initialState)
     }

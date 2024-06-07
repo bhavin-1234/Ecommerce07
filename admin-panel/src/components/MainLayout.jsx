@@ -15,6 +15,7 @@ import { AiOutlineBgColors, AiOutlineUser, AiOutlineShoppingCart, AiOutlineDashb
 import { IoIosNotifications } from "react-icons/io";
 import { ImBlog } from "react-icons/im";
 import { RiCouponLine } from "react-icons/ri";
+import { AiOutlineLogout } from "react-icons/ai";
 
 const MainLayout = () => {
 
@@ -47,7 +48,8 @@ const MainLayout = () => {
                     defaultSelectedKeys={['']}
                     onClick={({ key }) => {
                         if (key === "signout") {
-                            null
+                            localStorage.clear();
+                            window.location.reload();
                         } else {
                             navigate(key);
                         }
@@ -164,6 +166,11 @@ const MainLayout = () => {
                             key: 'enquiries',
                             icon: <FaClipboardList className='fs-4' />,
                             label: 'Enquiries',
+                        },
+                        {
+                            key: 'signout',
+                            icon: <AiOutlineLogout className='fs-4' />,
+                            label: 'Sign Out',
                         }
                     ]}
                 />

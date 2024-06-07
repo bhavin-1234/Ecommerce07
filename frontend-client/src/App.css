@@ -890,3 +890,8 @@ footer .input-group-text {
 }
 
 /* Shipping page Ends Here */
+
+.tree.active {
+  background-color: #febd69 !important;
+  color: #fff !important;
+}

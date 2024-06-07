@@ -50,7 +50,7 @@ const deleteAProduct = async (req, res) => {
 const getAProduct = async (req, res) => {
   const { id } = req.params;
   try {
-    const findProduct = await Product.findById(id).populate("color");
+    const findProduct = await Product.findById(id).populate("color").populate("ratings.postedBy");
     res.json(findProduct);
   } catch (error) {
     console.error("Error while fetching a single product: ", error);
@@ -146,13 +146,14 @@ const addToWishlist = async (req, res) => {
 const rating = async (req, res) => {
   const { _id } = req.user;
   const { star, productId, comment } = req.body;
+  console.log(star, productId, comment, _id);
   try {
     const product = await Product.findById(productId);
-    console.log("product:", product);
+    // console.log("product:", product);
     const alreadyRated = product.ratings.find(
       (userId) => userId.postedBy.toString() === _id.toString()
     );
-    console.log(alreadyRated);
+    // console.log(alreadyRated);
     if (alreadyRated) {
       await Product.updateOne(
         {

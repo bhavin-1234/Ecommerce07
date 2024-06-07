@@ -37,7 +37,7 @@ const loginUser = async (req, res) => {
     const findUser = await User.findOne({ email });
     if (findUser && (await findUser.isPasswordMatched(password))) {
       const refreshToken = await generateRefreshToken(findUser?._id);
-      const updateUser = await User.findOneAndUpdate(
+      const updateUser = await User.findByIdAndUpdate(
         findUser?._id,
         {
           refreshToken,
@@ -50,7 +50,7 @@ const loginUser = async (req, res) => {
         httpOnly: true,
         maxAge: 72 * 60 * 60 * 1000,
       });
-      res.json({
+      return res.json({
         id: findUser?._id,
         firstname: findUser?.firstname,
         lastname: findUser?.lastname,
@@ -59,7 +59,7 @@ const loginUser = async (req, res) => {
         token: generateToken(findUser?._id),
       });
     } else {
-      res.status(401).json({ message: "Invalid Credential", success: false });
+      return res.status(401).json({ message: "Invalid Credential", success: false });
     }
   } catch (error) {
     console.error("Error while logging a user: ", error);
@@ -191,17 +191,17 @@ const getAllUser = async (req, res) => {
 };
 
 // get a single user
-const getAUser = async (req, res) => {
-  const { id } = req.params;
-  try {
-    validateMongoDBID(id);
-    const singleUser = await User.findById(id);
-    res.json(singleUser);
-  } catch (error) {
-    console.error("Error while fetching a user:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+// const getAUser = async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     validateMongoDBID(id);
+//     const singleUser = await User.findById(id);
+//     res.json(singleUser);
+//   } catch (error) {
+//     console.error("Error while fetching a user:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 // delete a single user
 const deleteAUser = async (req, res) => {
@@ -274,6 +274,7 @@ const updatePassword = async (req, res) => {
 
 const forgotPasswordToken = async (req, res) => {
   const { email } = req.body;
+  console.log(email);
   const user = await User.findOne({ email });
   if (!user) {
     return res.json({ message: "User not found with this email" });
@@ -281,10 +282,10 @@ const forgotPasswordToken = async (req, res) => {
   try {
     const token = await user.createPasswordResetToken();
     await user.save();
-    const resetUrl = `Hi, Please follow link to reset Your Password. This link is valid till 10 minutes from now. <a hre='http://localhost:5000/api/user/reset-password/${token}'>click here</a>`;
+    const resetUrl = `Hi, Please follow this link to reset Your Password. This link is valid till 10 minutes from now. <a href='http://localhost:5173/reset-password/${token}'>click here</a>`;
     const data = {
       to: email,
-      text: "Hey User",
+      text: "Hey Use!",
       subject: "Forgot Password Link",
       html: resetUrl,
     };
@@ -402,6 +403,22 @@ const removeProductFromCart = async (req, res) => {
   }
 };
 
+const emptyCart = async (req, res) => {
+  const { _id } = req.user;
+  // const { cartItemId } = req.params;
+  try {
+    validateMongoDBID(_id);
+    // validateMongoDBID(cartItemId);
+    const deleteCart = await Cart.deleteMany({ userId: _id});
+    res.json(deleteCart);
+
+  } catch (error) {
+    console.error("Error while empty cart: ", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+};
+
+
 
 const updateProductQuantityFromCart = async (req, res) => {
   const { _id } = req.user;
@@ -447,160 +464,162 @@ const getMyOrders = async (req, res) => {
 };
 
 
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({}).populate("user");
+    res.json(orders);
+  } catch (error) {
+    console.error("Error while fetching allthe orders: ", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+};
 
-// const emptyCart = async (req, res) => {
-//   const { _id } = req.user;
-//   try {
-//     validateMongoDBID(_id);
-//     const user = await User.findById(_id);
-//     const cart = await Cart.findOneAndDelete({ orderBy: user._id });
-//     res.json(cart);
-//   } catch (error) {
-//     console.error("Error while empty the cart: ", error);
-//     res.status(500).json({ message: "Internal server Error" });
+
+const getOrder = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const orders = await Order.findById(id).populate("orderItems.product orderItems.color");
+    res.json(orders);
+  } catch (error) {
+    console.error("Error while fetching the order: ", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+};
+
+const updateOrderStatus = async (req, res) => { 
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    validateMongoDBID(id);
+    const updateStatus = await Order.findByIdAndUpdate(id, { orderStatus: status }, { new: true });
+    res.json(updateStatus);
+  } catch (error) {
+    console.error("Error while updating the order status: ", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+}
+
+const getMonthWiseOrderData = async (req, res) => {
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  let d = new Date();
+  let endDate = "";
+  d.setDate(1);
+  console.log(d);
+  for (let index = 0; index < 11; index++) {
+    d.setMonth(d.getMonth() - 1);
+    endDate = monthNames[d.getMonth()] + " " + d.getFullYear();
+  }
+  const data = await Order.aggregate([
+    {
+      $match: {
+        createdAt:
+        {
+          $lte: new Date(),
+          $gte: new Date(endDate)
+        },
+      }
+    },
+    {
+      $group: {
+        _id: {
+          month: "$month"
+        },
+        amount: {
+          $sum: "$totalPriceAfterDiscount"
+        },
+        count: {
+          $sum: 1
+        }
+      }
+    }
+  ]);
+
+  res.json(data);
+};
+
+
+
+
+// const getMonthWiseOrderCount = async (req, res) => {
+//   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+//   let d = new Date();
+//   let endDate = "";
+//   d.setDate(1);
+//   console.log(d);
+//   for (let index = 0; index < 11; index++) {
+//     d.setMonth(d.getMonth() - 1);
+//     endDate = monthNames[d.getMonth()] + " " + d.getFullYear();
 //   }
-// };
-
-// const applyCoupon = async (req, res) => {
-//   const { _id } = req.user;
-//   const { coupon } = req.body;
-//   try {
-//     validateMongoDBID(_id);
-//     const validCoupon = await Coupon.findOne({ name: coupon });
-//     if (validCoupon === null) {
-//       return res.json({ message: "Invalid Coupon!!" });
-//     }
-//     const user = await User.findById(_id);
-//     const { cartTotal } = await Cart.findOne({ orderBy: user._id });
-//     console.log("cartTotal: ", cartTotal);
-//     const totalAfterDiscount = (
-//       cartTotal -
-//       (cartTotal * validCoupon?.discount) / 100
-//     ).toFixed(2);
-//     await Cart.findOneAndUpdate(
-//       { orderBy: user._id },
-//       { totalAfterDiscount },
-//       { new: true }
-//     );
-//     res.json(totalAfterDiscount);
-//   } catch (error) {
-//     console.error("Error while applying the coupon: ", error);
-//     res.status(500).json({ message: "Internal server Error" });
-//   }
-// };
-
-// const createOrder = async (req, res) => {
-//   const { _id } = req.user;
-//   const { COD, couponApplied } = req.body;
-//   try {
-//     validateMongoDBID(_id);
-//     if (!COD) return res.json("Create Cash Order Failed!!");
-//     const user = await User.findById(_id);
-//     const userCart = await Cart.findOne({ orderBy: user._id });
-//     let finalAmount = 0;
-//     if (couponApplied && userCart.totalAfterDiscount) {
-//       finalAmount = userCart.totalAfterDiscount;
-//     } else {
-//       finalAmount = userCart.cartTotal;
-//     }
-//     let newOrder = await new Order({
-//       products: userCart.products,
-//       paymentIntent: {
-//         id: uniqid(),
-//         method: "COD",
-//         amount: finalAmount,
-//         status: "Cash On Delivery",
-//         created: Date.now(),
-//         currency: "usd",
-//       },
-//       orderBy: user._id,
-//       orderStatus: "Cash On Delivery",
-//     }).save();
-//     let update = userCart.products.map((item) => {
-//       return {
-//         updateOne: {
-//           filter: { _id: item.product._id },
-//           update: { $inc: { quanity: -item.count, sold: +item.count } },
+//   const data = await Order.aggregate([
+//     {
+//       $match: {
+//         createdAt:
+//         {
+//           $lte: new Date(),
+//           $gte: new Date(endDate)
 //         },
-//       };
-//     });
-//     const updated = await Product.bulkWrite(update, {});
-//     res.json({ message: "success" });
-//   } catch (error) {
-//     console.error("Error while creating the order: ", error);
-//     res.status(500).json({ message: "Internal server Error" });
-//   }
-// };
-
-// const getOrder = async (req, res) => {
-//   const { _id } = req.user;
-//   try {
-//     validateMongoDBID(_id);
-//     const userOrders = await Order.findOne({ orderBy: _id }).populate(
-//       "products.product orderBy"
-//     );
-//     res.json(userOrders);
-//   } catch (error) {
-//     console.error("Error while fetching the order: ", error);
-//     res.status(500).json({ message: "Internal server Error" });
-//   }
-// };
-
-// const getAllOrders = async (req, res) => {
-//   try {
-//     const userOrders = await Order.find({})
-//       .populate("products.product")
-//       .populate("orderBy");
-//     res.json(userOrders);
-//   } catch (error) {
-//     console.error("Error while fetching all the orders: ", error);
-//     res.status(500).json({ message: "Internal server Error" });
-//   }
-// };
-
-// const getOrderByUserId = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     validateMongoDBID(id);
-//     const userOrders = await Order.findById(id).populate("products.product");
-//     // const userOrders = await Order.findOne({ orderBy: id }).populate(
-//     //   "products.product orderBy"
-//     // );
-//     res.json(userOrders);
-//   } catch (error) {
-//     console.error("Error while fetching the order: ", error);
-//     res.status(500).json({ message: "Internal server Error" });
-//   }
-// };
-
-// const updateOrderStatus = async (req, res) => {
-//   const { status } = req.body;
-//   const { id } = req.params;
-//   try {
-//     validateMongoDBID(id);
-//     const update_order_status = await Order.findByIdAndUpdate(
-//       id,
-//       {
-//         orderStatus: status,
-//         $set: {
-//           "paymentIntent.status": status,
+//       }
+//     },
+//     {
+//       $group: {
+//         _id: {
+//           month: "$month"
 //         },
-//       },
-//       { new: true }
-//     ).populate("products.product");
-//     res.json(update_order_status);
-//   } catch (error) {
-//     console.error("Error while updating order status: ", error);
-//     res.status(500).json({ message: "Internal server Error" });
-//   }
+//         count: {
+//           $sum: 1
+//         }
+//       }
+//     }
+//   ]);
+
+//   res.json(data);
 // };
+
+
+const getYearlyTotalOrders = async (req, res) => {
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  let d = new Date();
+  let endDate = "";
+  d.setDate(1);
+  console.log(d);
+  for (let index = 0; index < 11; index++) {
+    d.setMonth(d.getMonth() - 1);
+    endDate = monthNames[d.getMonth()] + " " + d.getFullYear();
+  }
+  const data = await Order.aggregate([
+    {
+      $match: {
+        createdAt:
+        {
+          $lte: new Date(),
+          $gte: new Date(endDate)
+        },
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        count: {
+          $sum: 1
+        },
+        amount: { $sum: "$totalPriceAfterDiscount" }
+      }
+    }
+  ]);
+
+  res.json(data);
+};
+
+
+
+
 
 module.exports = {
   createUser,
   loginUser,
   loginAdmin,
   getAllUser,
-  getAUser,
+  // getAUser,
   deleteAUser,
   updateAUser,
   logout,
@@ -614,14 +633,178 @@ module.exports = {
   saveAddress,
   userCart,
   getUserCart,
-  // emptyCart,
-  // applyCoupon,
   createOrder,
-  // getOrder,
-  // updateOrderStatus,
-  // getAllOrders,
-  // getOrderByUserId,
   removeProductFromCart,
   updateProductQuantityFromCart,
-  getMyOrders
+  getMyOrders,
+  getMonthWiseOrderData,
+  getYearlyTotalOrders,
+  getAllOrders,
+  getOrder,
+  updateOrderStatus,
+  emptyCart
 };
+
+
+// emptyCart,
+// applyCoupon,
+// getOrder,
+// updateOrderStatus,
+// getAllOrders,
+// getOrderByUserId,
+// getMonthWiseOrderCount,
+
+
+
+// const emptyCart = async (req, res) => {
+  //   const { _id } = req.user;
+  //   try {
+    //     validateMongoDBID(_id);
+    //     const user = await User.findById(_id);
+    //     const cart = await Cart.findOneAndDelete({ orderBy: user._id });
+    //     res.json(cart);
+    //   } catch (error) {
+      //     console.error("Error while empty the cart: ", error);
+      //     res.status(500).json({ message: "Internal server Error" });
+      //   }
+      // };
+      
+      // const applyCoupon = async (req, res) => {
+        //   const { _id } = req.user;
+        //   const { coupon } = req.body;
+        //   try {
+          //     validateMongoDBID(_id);
+          //     const validCoupon = await Coupon.findOne({ name: coupon });
+//     if (validCoupon === null) {
+//       return res.json({ message: "Invalid Coupon!!" });
+//     }
+//     const user = await User.findById(_id);
+//     const { cartTotal } = await Cart.findOne({ orderBy: user._id });
+//     console.log("cartTotal: ", cartTotal);
+//     const totalAfterDiscount = (
+  //       cartTotal -
+  //       (cartTotal * validCoupon?.discount) / 100
+  //     ).toFixed(2);
+  //     await Cart.findOneAndUpdate(
+    //       { orderBy: user._id },
+    //       { totalAfterDiscount },
+    //       { new: true }
+    //     );
+    //     res.json(totalAfterDiscount);
+    //   } catch (error) {
+      //     console.error("Error while applying the coupon: ", error);
+      //     res.status(500).json({ message: "Internal server Error" });
+      //   }
+      // };
+      
+      // const createOrder = async (req, res) => {
+        //   const { _id } = req.user;
+        //   const { COD, couponApplied } = req.body;
+        //   try {
+//     validateMongoDBID(_id);
+//     if (!COD) return res.json("Create Cash Order Failed!!");
+//     const user = await User.findById(_id);
+//     const userCart = await Cart.findOne({ orderBy: user._id });
+//     let finalAmount = 0;
+//     if (couponApplied && userCart.totalAfterDiscount) {
+  //       finalAmount = userCart.totalAfterDiscount;
+  //     } else {
+    //       finalAmount = userCart.cartTotal;
+    //     }
+    //     let newOrder = await new Order({
+      //       products: userCart.products,
+      //       paymentIntent: {
+        //         id: uniqid(),
+        //         method: "COD",
+        //         amount: finalAmount,
+        //         status: "Cash On Delivery",
+        //         created: Date.now(),
+        //         currency: "usd",
+        //       },
+        //       orderBy: user._id,
+        //       orderStatus: "Cash On Delivery",
+        //     }).save();
+        //     let update = userCart.products.map((item) => {
+          //       return {
+            //         updateOne: {
+              //           filter: { _id: item.product._id },
+              //           update: { $inc: { quanity: -item.count, sold: +item.count } },
+              //         },
+              //       };
+              //     });
+              //     const updated = await Product.bulkWrite(update, {});
+              //     res.json({ message: "success" });
+              //   } catch (error) {
+                //     console.error("Error while creating the order: ", error);
+                //     res.status(500).json({ message: "Internal server Error" });
+                //   }
+                // };
+                
+                // const getOrder = async (req, res) => {
+                  //   const { _id } = req.user;
+                  //   try {
+//     validateMongoDBID(_id);
+//     const userOrders = await Order.findOne({ orderBy: _id }).populate(
+//       "products.product orderBy"
+//     );
+//     res.json(userOrders);
+//   } catch (error) {
+  //     console.error("Error while fetching the order: ", error);
+  //     res.status(500).json({ message: "Internal server Error" });
+  //   }
+  // };
+  
+  // const getAllOrders = async (req, res) => {
+    //   try {
+      //     const userOrders = await Order.find({})
+      //       .populate("products.product")
+      //       .populate("orderBy");
+      //     res.json(userOrders);
+      //   } catch (error) {
+        //     console.error("Error while fetching all the orders: ", error);
+        //     res.status(500).json({ message: "Internal server Error" });
+        //   }
+        // };
+        
+        // const getOrderByUserId = async (req, res) => {
+          //   const { id } = req.params;
+          //   try {
+            //     validateMongoDBID(id);
+            //     const userOrders = await Order.findById(id).populate("products.product");
+            //     // const userOrders = await Order.findOne({ orderBy: id }).populate(
+              //     //   "products.product orderBy"
+              //     // );
+              //     res.json(userOrders);
+              //   } catch (error) {
+                //     console.error("Error while fetching the order: ", error);
+                //     res.status(500).json({ message: "Internal server Error" });
+                //   }
+                // };
+                
+                // const updateOrderStatus = async (req, res) => {
+                  //   const { status } = req.body;
+                  //   const { id } = req.params;
+                  //   try {
+                    //     validateMongoDBID(id);
+                    //     const update_order_status = await Order.findByIdAndUpdate(
+                      //       id,
+//       {
+  //         orderStatus: status,
+  //         $set: {
+//           "paymentIntent.status": status,
+//         },
+//       },
+//       { new: true }
+//     ).populate("products.product");
+//     res.json(update_order_status);
+//   } catch (error) {
+  //     console.error("Error while updating order status: ", error);
+  //     res.status(500).json({ message: "Internal server Error" });
+  //   }
+  // };
+  
+  
+  
+  
+  
+  

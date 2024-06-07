@@ -8,25 +8,27 @@ import { AiFillDelete } from 'react-icons/ai';
 // import moment from 'moment';
 
 import { useParams } from "react-router-dom";
-import { getOrderByUser } from '../features/auth/authSlice';
+import { getOrder } from '../features/auth/authSlice';
+// import { getOrder } from '../features/auth/authSlice';
+// import { getOrderByUser } from '../features/auth/authSlice';
 
 
 
 
 const ViewOrder = () => {
 
-    const navigate = useParams();
-    const userId = navigate.id;
+    const params = useParams();
+    const orderId = params.id;
 
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(getOrderByUser(userId));
-    }, []);
+        dispatch(getOrder(orderId));
+    }, [orderId]);
 
-    const orderState = useSelector(state => state.auth?.orderbyuser?.products);
+    const orderState = useSelector(state => state.auth?.singleOrder);
 
-    console.log(orderState);
+    console.log("orderState2:", orderState?.orderItems);
 
 
     // const orderState = useSelector(state => state.auth.orders);
@@ -57,37 +59,23 @@ const ViewOrder = () => {
         {
             title: 'Amount',
             dataIndex: 'amount',
-        },
-        {
-            title: 'Date',
-            dataIndex: 'date',
-        },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-        },
+        }
     ];
     const data1 = [];
-    for (let i = 0; i < orderState?.length; i++) {
+
+
+
+    for (let i = 0; i < orderState?.orderItems.length; i++) {
         data1.push({
             key: i + 1,
-            name: orderState[i].product.title,
-            brand: orderState[i].product.brand,
-            count: orderState[i].count,
-            color: orderState[i].color,
-            amount: orderState[i].product.price,
-            date: orderState[i].product.createdAt,
-            action:
-                <>
-                    <Link className="fs-3 text-danger" to="/">
-                        <BiEdit />
-                    </Link>
-                    <Link className="ms-3 fs-3 text-danger" to="/">
-                        <AiFillDelete />
-                    </Link>
-                </>
+            name: orderState?.orderItems[i]?.product?.title,
+            brand: orderState?.orderItems[i]?.product?.brand,
+            count: orderState?.orderItems[i]?.quantity,
+            color: orderState?.orderItems[i]?.color?.title,
+            amount: orderState?.orderItems[i]?.product?.price
         });
     }
+
 
 
 

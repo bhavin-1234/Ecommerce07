@@ -15,12 +15,13 @@ const Cart = () => {
 
     const [totalAmount, setTotalAmount] = useState(null);
 
-    const [cartItemDetail, setCartItemDetail] = useState({
-        cartItemId: "",
-        newQuantity: ""
-    });
+    // const [cartItemDetail, setCartItemDetail] = useState({
+    //     cartItemId: "",
+    //     newQuantity: ""
+    // });
 
 
+    const { cartProducts, isSuccess, isError, removedProductCart } = useSelector(state => state.auth);
 
 
 
@@ -28,42 +29,41 @@ const Cart = () => {
         dispatch(getCart());
     }, []);
 
-    useEffect(() => {
-        if (cartItemDetail.cartItemId && cartItemDetail.newQuantity) {
-            dispatch(updateProductQuantityFromCart(cartItemDetail));
-        }
-    }, [cartItemDetail]);
+    // useEffect(() => {
+    //     if (cartItemDetail.cartItemId && cartItemDetail.newQuantity) {
+    //         dispatch(updateProductQuantityFromCart(cartItemDetail));
+    //     }
+    // }, [cartItemDetail]);
 
 
 
 
-    const { cartProducts, isSuccess, isError, removedProductCart, updatedProductCart } = useSelector(state => state.auth);
 
 
 
 
-    useEffect(() => {
-        if (isSuccess && removedProductCart) {
-            toast.success("Product removed From Cart Successfully!", {
-                onClose: () => {
-                    dispatch(getCart());
-                }
-            });
-        }
+    // useEffect(() => {
+    //     if (isSuccess && removedProductCart) {
+    //         toast.success("Product removed From Cart Successfully!", {
+    //             onClose: () => {
+    //                 dispatch(getCart());
+    //             }
+    //         });
+    //     }
 
-        if (isSuccess && updatedProductCart) {
-            toast.success("Product updated From Cart Successfully!", {
-                onClose: () => {
-                    dispatch(getCart());
-                }
-            });
-        }
+    //     // if (isSuccess && updatedProductCart) {
+    //     //     toast.success("Product updated From Cart Successfully!", {
+    //     //         onClose: () => {
+    //     //             dispatch(getCart());
+    //     //         }
+    //     //     });
+    //     // }
 
-        if (isError) {
-            toast.error("Something Went Wrong!");
-        }
+    //     if (isError) {
+    //         toast.error("Something Went Wrong!");
+    //     }
 
-    }, [isSuccess, isError, removedProductCart, updatedProductCart]);
+    // }, [isSuccess, isError, removedProductCart]);
 
 
 
@@ -79,6 +79,15 @@ const Cart = () => {
         setTotalAmount(total);
 
     }, [cartProducts]);
+
+    const handleQuantityChange = (quantity, id) => {
+        dispatch(updateProductQuantityFromCart({ cartItemId: id, newQuantity: quantity }));
+        setTimeout(() => {
+            dispatch(getCart());
+        }, 50);
+
+
+    }
 
 
 
@@ -119,11 +128,19 @@ const Cart = () => {
                                             name="quantity"
                                             min="1"
                                             max="10"
-                                            value={cartItemDetail?.newQuantity || cartItem?.quantity}
-                                            onChange={(e) => setCartItemDetail({ cartItemId: cartItem?._id, newQuantity: e.target.value })}
+                                            value={cartItem?.quantity}
+                                            // value={cartItemDetail?.newQuantity || cartItem?.quantity}
+                                            // onChange={(e) => setCartItemDetail({ cartItemId: cartItem?._id, newQuantity: e.target.value })}
+                                            onChange={(e) => handleQuantityChange(e.target.value, cartItem?._id)}
                                         />
                                     </div>
-                                    <div><AiFillDelete onClick={() => dispatch(removeProductFromCart(cartItem?._id))} className="text-danger fs-3" style={{ cursor: "pointer" }} /></div>
+                                    <div><AiFillDelete onClick={() => {
+                                        dispatch(removeProductFromCart(cartItem?._id))
+                                        setTimeout(() => {
+                                            dispatch(getCart());
+                                        }, 50);
+                                    }
+                                    } className="text-danger fs-3" style={{ cursor: "pointer" }} /></div>
                                 </div>
                                 <div className="cart-col-4">
                                     <h5 className="price">$ {cartItem?.price * cartItem?.quantity}</h5>

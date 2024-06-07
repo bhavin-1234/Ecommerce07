@@ -1,11 +1,12 @@
 import { Table } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { getOrders } from '../features/auth/authSlice';
+import { getOrders, updateOrderStatus } from '../features/auth/authSlice';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BiEdit } from 'react-icons/bi';
 import { AiFillDelete } from 'react-icons/ai';
 import moment from 'moment';
+import { useState } from 'react';
 
 
 
@@ -13,12 +14,13 @@ const Orders = () => {
 
     const dispatch = useDispatch();
 
+
     useEffect(() => {
         dispatch(getOrders());
     }, []);
 
     const orderState = useSelector(state => state.auth.orders);
-    console.log('orderState: ', orderState);
+    console.log('orderState1: ', orderState);
 
 
     const columns = [
@@ -48,12 +50,11 @@ const Orders = () => {
         },
     ];
     const data1 = [];
-    for (let i = 0; i < orderState.length; i++) {
+    for (let i = 0; i < orderState?.length; i++) {
 
-        console.log(orderState[i]?._id);
         data1.push({
             key: i + 1,
-            name: `${orderState[i].orderBy.firstname.padEnd(30)}${orderState[i].orderBy.lastname
+            name: `${orderState[i]?.user?.firstname} ${orderState[i]?.user?.lastname
                 }`,
             products:
                 <>
@@ -63,19 +64,28 @@ const Orders = () => {
                         View Orders
                     </Link>
                 </>,
-            amount: orderState[i].paymentIntent.amount,
+            amount: orderState[i]?.totalPrice,
             date: moment(orderState[i].createdAt).format("DD/MM/YYYY, hh:mm:ss A"),
             action:
                 <>
-                    <Link className="fs-3 text-danger" to="/">
-                        <BiEdit />
-                    </Link>
-                    <Link className="ms-3 fs-3 text-danger" to="/">
-                        <AiFillDelete />
-                    </Link>
+                    <select value={orderState[i]?.orderStatus} onChange={(e) => handleStatusChange(e, orderState[i]?._id)} className='form-select'>
+                        <option value="Processed">Processed</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Out of Delivery">Out of Delivery</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Ordered">Ordered</option>
+                    </select>
                 </>
         });
     }
+
+    const handleStatusChange = (e, id) => {
+        const data = { id: id, status: e.target.value }
+        dispatch(updateOrderStatus(data));
+        setTimeout(() => {
+            dispatch(getOrders());
+        }, 50);
+    };
 
     // <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
     //     {(orderState[i].products.map((data, index, array) => <li key={data.product?._id}>{data.product?.title}{index !== array.length - 1 && ","}</li>))}

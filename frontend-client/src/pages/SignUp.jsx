@@ -4,13 +4,18 @@ import Container from '../components/Container';
 import CustomInput from '../components/CustomInput';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { useDispatch } from "react-redux";
-import { registerUser } from '../features/user/userSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser, resetState } from '../features/user/userSlice';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 
 const SignUp = () => {
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     const initialValues = {
         firstname: "",
@@ -28,16 +33,39 @@ const SignUp = () => {
         password: Yup.string().required("Pasword is required!"),
     });
 
+    const authState = useSelector(state => state.auth);
+
     const formik = useFormik({
         initialValues,
         validationSchema,
         onSubmit: (values) => {
+            setIsLoading(true);
             dispatch(registerUser(values));
+            // setTimeout(() => {
+            //     formik.resetForm();
+            //     formik.resetForm();
+            // }, 2000);
             setTimeout(() => {
-                formik.resetForm();
+                formik.setSubmitting(false);
+                setIsLoading(false);
             }, 2000);
         }
     });
+
+
+    useEffect(() => {
+        if (authState.createdUser && !authState.isError) {
+            setTimeout(() => {
+                navigate("/login");
+                formik.resetForm();
+            }, 2000);
+        }
+
+
+        return () => {
+            dispatch(resetState());
+        }
+    }, [authState]);
 
 
 
@@ -80,7 +108,12 @@ const SignUp = () => {
                                 <div>
                                     <div className="mt-3 d-flex justify-content-center align-items-center gap-15">
                                         <button
-                                            disabled={formik.isSubmitting || !formik.isValid} className="button border-0" type="submit">Sign Up</button>
+                                            disabled={formik.isSubmitting}
+                                            // disabled={formik.isSubmitting || !formik.isValid}    
+                                            className="button border-0" type="submit">
+                                            {/* Sign Up */}
+                                            {isLoading ? "Signing Up..." : "Sign Up"}
+                                        </button>
                                     </div>
                                 </div>
                             </form>

@@ -17,7 +17,7 @@ const login = async (userData) => {
 
 const getOrders = async () => {
     try {
-        const response = await axiosInstanceWithAuth.get("user/get-all-orders");
+        const response = await axiosInstanceWithAuth.get("user/orders");
         return response.data;
     } catch (error) {
         console.error("Error during fetching all orders: ", error);
@@ -27,10 +27,40 @@ const getOrders = async () => {
 
 const getOrder = async (id) => {
     try {
-        const response = await axiosInstanceWithAuth.post(`user/getorderbyuser/${id}`);
+        const response = await axiosInstanceWithAuth.get(`user/orders/${id}`);
         return response.data;
     } catch (error) {
-        console.error("Error during fetching all orders: ", error);
+        console.error("Error during fetching the order: ", error);
+        throw error;
+    }
+};
+
+const updateOrderStatus = async (data) => {
+    try {
+        const response = await axiosInstanceWithAuth.put(`user/order/update-status/${data?.id}`, { status: data?.status });
+        return response.data;
+    } catch (error) {
+        console.error("Error during updating the order status: ", error);
+        throw error;
+    }
+};
+
+const getMonthlyOrderData = async () => {
+    try {
+        const response = await axiosInstanceWithAuth.get(`user/monthwise-order-data`);
+        return response.data;
+    } catch (error) {
+        console.error("Error during fetching monthly orders: ", error);
+        throw error;
+    }
+};
+
+const getYearlyOrderData = async () => {
+    try {
+        const response = await axiosInstanceWithAuth.get(`user/yealy-order-count`);
+        return response.data;
+    } catch (error) {
+        console.error("Error during fetching yearly orders: ", error);
         throw error;
     }
 };
@@ -40,7 +70,10 @@ const getOrder = async (id) => {
 const authService = {
     login,
     getOrders,
-    getOrder
+    getOrder,
+    getMonthlyOrderData,
+    getYearlyOrderData,
+    updateOrderStatus
 };
 
 export default authService;

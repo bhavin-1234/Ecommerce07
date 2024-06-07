@@ -33,13 +33,21 @@ const LogIn = () => {
   const { user, isError, isSuccess, message, isLoading } = useSelector(state => state.auth);
 
 
+
+
   useEffect(() => {
     if (isSuccess) {
       navigate("/admin");
-    } else {
-      navigate("");
+
     }
-  }, [isSuccess, user, isError, isLoading])
+    if (isError) {
+      alert("Invalid credentials. Please try again.");
+    }
+    // else {
+    // navigate("/");
+    // window.location.reload();
+    // }
+  }, [isSuccess, isError, navigate])
 
   return (
     <div style={{ background: "#ffd333" }} className="py-5 min-vh-100 d-flex align-items-center justify-content-center">
@@ -71,9 +79,9 @@ const LogIn = () => {
             val={formik.values.password}
           />
           {formik.errors.password && formik.touched.password && <div className="error">{formik.errors.password}</div>}
-          <div className="mb-3 text-end">
+          {/* <div className="mb-3 text-end">
             <Link to="/forgot-password">Forgot Password?</Link>
-          </div>
+          </div> */}
           <button disabled={formik.isSubmitting || !formik.isValid} className="border-0 px-3 py-2 text-white fw-bold w-100 text-center text-decoration-none fs-5" style={{ background: "#ffd333" }} type="submit" >Log In</button>
         </form>
       </div>

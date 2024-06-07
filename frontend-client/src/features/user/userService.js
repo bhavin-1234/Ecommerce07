@@ -5,17 +5,22 @@ const registerUser = async (userData) => {
         const response = await axiosInstanceWithoutAuth.post("user/register", userData);
         return response.data;
     } catch (error) {
-        console.error("Error during registering a user: ", error);
+        console.error("Error during registering a user: ", error.response.data);
+        throw error.response.data;
     }
 };
 
 const loginUser = async (loginData) => {
     try {
         const response = await axiosInstanceWithoutAuth.post("user/login", loginData);
-        localStorage.setItem("digiticToken", JSON.stringify(response.data));
+        // console.log(response);
+        // localStorage.setItem("digiticToken", JSON.stringify(response.data));
         return response.data;
     } catch (error) {
-        console.error("Error during login a user: ", error);
+        console.error("Error during login a user: ", error.response.data);
+        // console.log(error.response.data);
+        // return Promise.reject(error.response.data);
+        throw error.response.data;
     }
 };
 
@@ -85,10 +90,38 @@ const geUserOrders = async () => {
 const updateUser = async (userData) => {
     try {
         const response = await axiosInstanceWithAuth.put("user/update-user", userData);
-        localStorage.setItem("digiticToken", JSON.stringify(response.data));
+        // localStorage.setItem("digiticToken", JSON.stringify(response.data));
         return response.data;
     } catch (error) {
         console.error("Error during updating user: ", error);
+        throw error.response.data;
+    }
+};
+
+const forgotPassToken = async (data) => {
+    try {
+        const response = await axiosInstanceWithoutAuth.post("user/forgot-password-token", data);
+        return response.data;
+    } catch (error) {
+        console.error("Error during forgot password token : ", error);
+    }
+};
+
+const resetPassWord = async (data) => {
+    try {
+        const response = await axiosInstanceWithoutAuth.put(`user/reset-password/${data.id}`, { password: data?.password });
+        return response.data;
+    } catch (error) {
+        console.error("Error during reset password : ", error);
+    }
+};
+
+const emptyCart = async () => {
+    try {
+        const response = await axiosInstanceWithAuth.delete("user/empty-cart");
+        return response.data;
+    } catch (error) {
+        console.error("Error during empty cart : ", error);
     }
 };
 
@@ -103,5 +136,8 @@ export const userService = {
     updateProductQuantityFromCart,
     createOrder,
     geUserOrders,
-    updateUser
+    updateUser,
+    forgotPassToken,
+    resetPassWord,
+    emptyCart
 }

@@ -34,13 +34,13 @@ const Customers = () => {
     const customerState = useSelector((state) => state.customer.customers);
 
     const data1 = [];
-    for (let i = 0; i < customerState.length; i++) {
+    for (let i = 0; i < customerState?.length; i++) {
         if (customerState[i].role !== "admin") {
             data1.push({
                 key: i,
-                name: `${customerState[i].firstname} ${customerState[i].lastname}`,
-                email: customerState[i].email,
-                mobile: customerState[i].mobile,
+                name: `${customerState[i]?.firstname} ${customerState[i]?.lastname}`,
+                email: customerState[i]?.email,
+                mobile: customerState[i]?.mobile,
             });
         }
     }

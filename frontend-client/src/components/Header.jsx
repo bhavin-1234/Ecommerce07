@@ -1,18 +1,26 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { BsSearch } from "react-icons/bs";
 import wishlist from "../images/wishlist.svg";
-import compare from "../images/compare.svg";
+// import compare from "../images/compare.svg";
 import userPic from "../images/user.svg";
 import cart from "../images/cart.svg";
 import menu from "../images/menu.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getCart } from "../features/user/userSlice";
+import { Typeahead } from 'react-bootstrap-typeahead';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
+import { getProduct } from "../features/products/productSlice";
 
 const Header = () => {
 
-  const [totalAmount, setTotalAmount] = useState(null);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [totalAmount, setTotalAmount] = useState(null);
+  const authState = useSelector(state => state.auth);
+  const [paginate, setPaginate] = useState(true);
+  const productState = useSelector(state => state?.product?.products);
+  const [productOpt, setProductOpt] = useState([]);
 
   const cartsProducts = useSelector((state) => state.auth?.cartProducts);
   const { user } = useSelector((state) => state.auth);
@@ -20,8 +28,10 @@ const Header = () => {
 
 
   useEffect(() => {
-    dispatch(getCart());
-  }, [dispatch]);
+    authState.user !== null && dispatch(getCart());
+  }, []);
+
+
 
 
 
@@ -32,6 +42,21 @@ const Header = () => {
     setTotalAmount(total);
 
   }, [cartsProducts]);
+
+  useEffect(() => {
+    let data = [];
+    for (let i = 0; i < productState?.length; i++) {
+      const element = productState[i];
+      data.push({
+        id: i,
+        prod: element?._id,
+        name: element?.title
+      });
+      setProductOpt(data);
+    }
+  }, [productState]);
+
+
 
 
 
@@ -77,12 +102,25 @@ const Header = () => {
             </div>
             <div className="col-5">
               <div className="input-group">
-                <input
+                {/* <input
                   type="text"
                   className="form-control py-2"
                   placeholder="Search  Product Here..."
                   aria-label="Search  Product Here..."
                   aria-describedby="basic-addon2"
+                /> */}
+                <Typeahead
+                  id="pagination-example"
+                  onPaginate={() => console.log('Results paginated')}
+                  onChange={(selected) => {
+                    navigate(`/product/${selected[0]?.prod}`);
+                    dispatch(getProduct(selected[0]?.prod));
+                  }}
+                  options={productOpt}
+                  paginate={paginate}
+                  labelKey={"name"}
+                  minLength={2}
+                  placeholder="Search for Products here..."
                 />
                 <span className="input-group-text p-3" id="basic-addon2">
                   {<BsSearch className="fs-6" />}
@@ -91,14 +129,14 @@ const Header = () => {
             </div>
             <div className="col-5">
               <div className="header-upper-links d-flex align-items-center justify-content-between">
-                <div>
+                {/* <div>
                   <Link to="/compare-product" className="d-flex align-items-center gap-10 text-white" >
                     <img src={compare} alt="compare" />
                     <p className="mb-0">
                       Compare <br /> Products
                     </p>
                   </Link>
-                </div>
+                </div> */}
                 <div>
                   <Link to="/wishlist" className="d-flex align-items-center gap-10 text-white">
                     <img src={wishlist} alt="wishlist" />
