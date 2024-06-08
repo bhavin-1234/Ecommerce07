@@ -1,19 +1,17 @@
 import { axiosInstanceWithAuth, axiosInstanceWithoutAuth } from '../../utils/axiosConfig';
 
-const login = async (userData) => {
+const loginAdmin = async (userData) => {
     try {
-
         const response = await axiosInstanceWithoutAuth.post("user/admin-login", userData);
-        if (response.data && response.data.id) {
-            localStorage.setItem("user", JSON.stringify(response.data));
-        }
+
         return response.data;
     } catch (error) {
         console.error("Error during login: ", error);
-        throw error;
+        // throw error.response.data;
+        // return Promise.reject(error.response.data);
+        throw error.response.data;
     }
 }
-
 
 const getOrders = async () => {
     try {
@@ -21,7 +19,7 @@ const getOrders = async () => {
         return response.data;
     } catch (error) {
         console.error("Error during fetching all orders: ", error);
-        throw error;
+        throw error.response.data;
     }
 };
 
@@ -51,7 +49,7 @@ const getMonthlyOrderData = async () => {
         return response.data;
     } catch (error) {
         console.error("Error during fetching monthly orders: ", error);
-        throw error;
+        throw error.response.data;
     }
 };
 
@@ -61,14 +59,14 @@ const getYearlyOrderData = async () => {
         return response.data;
     } catch (error) {
         console.error("Error during fetching yearly orders: ", error);
-        throw error;
+        throw error.response.data;
     }
 };
 
 
 
 const authService = {
-    login,
+    loginAdmin,
     getOrders,
     getOrder,
     getMonthlyOrderData,

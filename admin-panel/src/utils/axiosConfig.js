@@ -1,6 +1,10 @@
+import { base_url } from "./base_url";
 import axios from "axios";
-import { base_url } from "./base_url.js";
-const userToken = JSON.parse(localStorage.getItem("user"))?.token;
+const userToken = (JSON.parse(localStorage.getItem("user")))?.token;
+
+const axiosInstanceWithoutAuth = axios.create({
+    baseURL: base_url
+});
 
 const axiosInstanceWithAuth = axios.create({
     baseURL: base_url,
@@ -18,8 +22,6 @@ const axiosInstanceWithAuthAndMFD = axios.create({
     }
 });
 
-const axiosInstanceWithoutAuth = axios.create({
-    baseURL: base_url
-});
+
 
 export { axiosInstanceWithAuth, axiosInstanceWithoutAuth, axiosInstanceWithAuthAndMFD };

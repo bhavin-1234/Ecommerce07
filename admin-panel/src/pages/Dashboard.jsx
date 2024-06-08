@@ -1,6 +1,6 @@
 // import { BsArrowDownRight, BsArrowUpRight } from "react-icons/bs";
 // import { BsArrowDownRight } from "react-icons/bs";
-import { Column } from '@ant-design/plots';
+// import { Column } from '@ant-design/plots';
 import { Table } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -38,6 +38,7 @@ const columns = [
 
 
 
+
 const Dashboard = () => {
     const dispatch = useDispatch();
 
@@ -45,16 +46,14 @@ const Dashboard = () => {
         dispatch(getMonthlyOrderData());
         dispatch(getYearlyOrderData());
         dispatch(getOrders());
-    }, []);
-    // const { monthlyData } = useSelector(state => state.auth);
-    const { yearlyData } = useSelector(state => state.auth);
-    const { orders } = useSelector(state => state.auth);
+    }, [dispatch]);
+    // const { monthlyData }  = useSelector(state => state.auth);
+    const { yearlyData = [], orders = [] } = useSelector(state => state.auth);
     // const [monthWiseIncome, setMonthWiseIncome] = useState(null);
     // const [monthWiseOrders, setMonthWiseOrders] = useState(null);
     const [ordersData, setOrdersData] = useState(null);
 
 
-    console.log("orders: ", orders);
 
     useEffect(() => {
         // let monthlyIncome = [];
@@ -157,6 +156,9 @@ const Dashboard = () => {
     //     legend: false,
     // };
 
+    if (orders.length === 0 || yearlyData.length === 0) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div>

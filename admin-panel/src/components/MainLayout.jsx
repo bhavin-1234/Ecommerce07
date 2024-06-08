@@ -16,6 +16,7 @@ import { IoIosNotifications } from "react-icons/io";
 import { ImBlog } from "react-icons/im";
 import { RiCouponLine } from "react-icons/ri";
 import { AiOutlineLogout } from "react-icons/ai";
+import { useSelector } from 'react-redux';
 
 const MainLayout = () => {
 
@@ -25,6 +26,9 @@ const MainLayout = () => {
             navigate("/");
         }
     })
+
+    const { user } = useSelector(state => state.auth);
+
 
 
 
@@ -38,8 +42,8 @@ const MainLayout = () => {
             <Sider trigger={null} collapsible collapsed={collapsed}>
                 <div className="demo-logo-vertical">
                     <h2 className='text-white fs-5 text-center py-3 mb-0'>
-                        <span className='sm-logo'>DC</span>
-                        <span className='lg-logo'>Dec Corner</span>
+                        <span className='sm-logo'>A</span>
+                        <span className='lg-logo'>Avkash</span>
                     </h2>
                 </div>
                 <Menu
@@ -203,8 +207,8 @@ const MainLayout = () => {
                                 <img style={{ height: 32, width: 32, borderRadius: 3 }} src="https://stroyka-admin.html.themeforest.scompiler.ru/variants/ltr/images/customers/customer-4-64x64.jpg" alt="profile" />
                             </div>
                             <div>
-                                <h5 className='text-dark mb-0'>Navdeep</h5>
-                                <p className='mb-0'>navdeepdahiya753@gmail.com</p>
+                                <h5 className='text-dark mb-0 text-capitalize'>{user?.firstname + " " + user?.lastname}</h5>
+                                <p className='mb-0'>{user?.email}</p>
                             </div>
                             <ul className="dropdown-menu">
                                 <li><Link className="dropdown-item py-2 mb-1" style={{ height: "auto", lineHeight: "20px" }} to="/">View Profile</Link></li>

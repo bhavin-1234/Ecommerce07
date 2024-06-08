@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   blockUser,
   createUser,
-  deleteAUser,
+  // deleteAUser,
   // getAUser,
   getAllUser,
   loginUser,
@@ -42,7 +42,7 @@ router.post("/admin-login", loginAdmin);
 router.get("/all-users", getAllUser);
 router.get("/refresh", refreshToken);
 router.get("/logout", logout);
-router.delete("/:id", deleteAUser);
+// router.delete("/:id", deleteAUser);
 router.get("/get-my-orders", authMiddleware, getMyOrders);
 // router.get("/monthwise-order-count", authMiddleware, isAdmin, getMonthWiseOrderCount);
 router.get("/yealy-order-count", authMiddleware, isAdmin, getYearlyTotalOrders);

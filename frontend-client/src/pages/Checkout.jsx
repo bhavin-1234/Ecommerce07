@@ -6,8 +6,9 @@ import { useEffect, useState } from "react";
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { axiosInstanceWithAuth } from "../utils/axiosConfig";
-import { createOrder } from "../features/user/userSlice";
+import { createOrder, emptyCart, resetState } from "../features/user/userSlice";
 import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
 const Checkout = () => {
 
@@ -173,6 +174,7 @@ const Checkout = () => {
 
 
 
+
             },
 
 
@@ -257,10 +259,17 @@ const Checkout = () => {
 
     useEffect(() => {
         if (isSuccess && createdOrder) {
-            toast.success("Payment Successfully!", {
+            toast.success("Order Created Successfully!", {
                 onClose: () => {
+
                     formik.resetForm();
-                    navigate("/my-orders");
+                    // dispatch(emptyCart());
+                    // dispatch(resetState());
+                    dispatch(emptyCart());
+                    setTimeout(() => {
+                        dispatch(resetState());
+                        navigate("/my-orders");
+                    }, 500);
                 }
             });
         }

@@ -26,11 +26,26 @@ import ViewEnquiry from './pages/ViewEnquiry';
 import ViewOrder from './pages/ViewOrder';
 import PrivateRoutes from './routing/PrivateRoute';
 import AuthenticRoutes from './routing/AuthenticRoutes';
+// import { ToastContainer } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+
+{/* <ToastContainer
+  position="top-right"
+  autoClose={1000}
+  hideProgressBar={false}
+  newestOnTop={true}
+  closeOnClick
+  rtl={false}
+  pauseOnFocusLoss
+  draggable
+  theme="light"
+/> */}
 
 
 const App = () => {
   return (
     <>
+
       <Router>
         <Routes>
           <Route path="/" element={<AuthenticRoutes><LogIn /></AuthenticRoutes>} />

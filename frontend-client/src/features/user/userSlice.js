@@ -200,7 +200,7 @@ export const authSlice = createSlice({
                 state.addedToCart = action.payload;
                 state.message = "success";
                 if (state.isSuccess) {
-                    toast.success("Product Addetd to Cart Successfully!");
+                    toast.success("Product Added to Cart Successfully!");
                 }
             })
             .addCase(addToCart.rejected, (state, action) => {
@@ -209,7 +209,7 @@ export const authSlice = createSlice({
                 state.isSuccess = false;
                 state.message = action.error;
                 if (state.isError) {
-                    toast.success(action.error);
+                    toast.error(action.error);
                 }
             })
             .addCase(getCart.pending, (state) => {
@@ -279,12 +279,19 @@ export const authSlice = createSlice({
                 state.isSuccess = true;
                 state.createdOrder = action.payload;
                 state.message = "success";
+                // if (state.isSuccess) {
+                //     toast.success("Order Created Successfully!");
+                // }
             })
             .addCase(createOrder.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
+                state.createdOrder = null;
                 state.message = action.error;
+                if (state.isError) {
+                    toast.error("Something Went Wrong!");
+                }
             })
             .addCase(getUserOrders.pending, (state) => {
                 state.isLoading = true;
@@ -393,7 +400,7 @@ export const authSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
-                state.message = action.error;
+                state.message = action.error.message;
             })
             .addCase(resetState, () => initialState)
     }

@@ -8,6 +8,7 @@ const CustomInput = (props) => {
                 <input
                     type={type}
                     name={name}
+                    autoComplete={"true"}
                     value={val}
                     className={`form-control ${!i_class ? "" : i_class}`}
                     id={i_id}

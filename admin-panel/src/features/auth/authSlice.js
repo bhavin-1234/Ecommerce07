@@ -12,15 +12,17 @@ const initialState = {
     message: ""
 };
 
-export const login = createAsyncThunk("auth/admin-login", async (user, thunkAPI) => {
+export const loginAdmin = createAsyncThunk("auth/admin-login", async (userData, thunkAPI) => {
+    // console.log(userData);
+    // console.log(thunkAPI);
     try {
-        return await authService.login(user);
+        return await authService.loginAdmin(userData);
     } catch (error) {
         return thunkAPI.rejectWithValue(error);
     }
 });
 
-export const getOrders = createAsyncThunk("order/get-orders", async (thunkAPI) => {
+export const getOrders = createAsyncThunk("order/get-orders", async (_, thunkAPI) => {
     try {
         return await authService.getOrders();
     } catch (error) {
@@ -44,7 +46,7 @@ export const updateOrderStatus = createAsyncThunk("order/update-status", async (
     }
 });
 
-export const getMonthlyOrderData = createAsyncThunk("order/monthly-order-data", async (thunkAPI) => {
+export const getMonthlyOrderData = createAsyncThunk("order/monthly-order-data", async (_, thunkAPI) => {
     try {
         return await authService.getMonthlyOrderData();
     } catch (error) {
@@ -52,7 +54,7 @@ export const getMonthlyOrderData = createAsyncThunk("order/monthly-order-data", 
     }
 });
 
-export const getYearlyOrderData = createAsyncThunk("order/yearly-order-data", async (thunkAPI) => {
+export const getYearlyOrderData = createAsyncThunk("order/yearly-order-data", async (_, thunkAPI) => {
     try {
         return await authService.getYearlyOrderData();
     } catch (error) {
@@ -69,22 +71,30 @@ export const authSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(login.pending, (state) => {
+            .addCase(loginAdmin.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(login.fulfilled, (state, action) => {
+            .addCase(loginAdmin.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isError = false;
                 state.isSuccess = true;
-                state.user = action.payload;
-                state.message = "success"
+                state.loggedInUser = action.payload;
+                state.message = "success";
+                localStorage.setItem("user", JSON.stringify(action.payload));
+                state.user = JSON.parse(localStorage.getItem("user")) || null;
+                if (state.isSuccess) {
+                    toast.success("Admin Logged In Successfully!");
+                }
             })
-            .addCase(login.rejected, (state, action) => {
+            .addCase(loginAdmin.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.isSuccess = false;
                 state.user = null;
-                state.message = action.error;
+                state.message = action.error.message;
+                if (state.isError === true) {
+                    toast.error(action.payload.message);
+                }
             })
             .addCase(getOrders.pending, (state) => {
                 state.isLoading = true;
@@ -101,7 +111,7 @@ export const authSlice = createSlice({
                 state.isError = true;
                 state.isSuccess = false;
                 state.orders = null;
-                state.message = action.error;
+                state.message = action.payload;
             })
             .addCase(getOrder.pending, (state) => {
                 state.isLoading = true;
@@ -135,7 +145,7 @@ export const authSlice = createSlice({
                 state.isError = true;
                 state.isSuccess = false;
                 state.orders = null;
-                state.message = action.error;
+                state.message = action.payload;
             })
             .addCase(getYearlyOrderData.pending, (state) => {
                 state.isLoading = true;

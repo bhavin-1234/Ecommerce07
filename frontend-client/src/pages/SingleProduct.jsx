@@ -91,25 +91,16 @@ const SingleProduct = () => {
 
 
 
-    const [orderedProduct, setOrderedProduct] = useState(true);
 
 
-    const { isSuccess, isError, addedToCart } = useSelector(state => state.auth);
+    const { isSuccess, addedToCart } = useSelector(state => state.auth);
 
     useEffect(() => {
         if (isSuccess && addedToCart) {
-            toast.success("Added to Cart Successfully!", {
-                onClose: () => {
-                    setCartFormData(initialValues);
-                }
-            });
+            setCartFormData(initialValues);
         }
 
-        if (isError) {
-            toast.error("Something Went Wrong!");
-        }
-
-    }, [isSuccess, isError, addedToCart]);
+    }, [isSuccess, addedToCart]);
 
 
     const props = {
@@ -309,11 +300,9 @@ const SingleProduct = () => {
                                         <p className="mb-0">Based on 2 Reviews</p>
                                     </div>
                                 </div>
-                                {orderedProduct &&
-                                    <div>
-                                        <a href="" className="text-dark text-decoration-underline">Write a Review</a>
-                                    </div>
-                                }
+                                <div>
+                                    <a href="" className="text-dark text-decoration-underline">Write a Review</a>
+                                </div>
                             </div>
                             <div className="review-form py-4">
                                 <h4 className="mb-2">Write a Review</h4>

@@ -38,8 +38,8 @@ const ProductCard = (props) => {
                             </button>
                         </div>
                         <div className="product-img">
-                            <img src={product?.images[0].url} alt="product" />
-                            <img src={product?.images[1].url} alt="product" />
+                            <img src={product?.images[0]?.url} alt="product" />
+                            <img src={product?.images[1]?.url} alt="product" />
                         </div>
                         <div className="product-details">
                             <h6 className="brand">{product?.brand}</h6>

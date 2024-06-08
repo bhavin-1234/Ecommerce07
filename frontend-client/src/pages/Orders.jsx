@@ -40,60 +40,56 @@ const Orders = () => {
                     </div>
                     <div className="col-12 mt-3">
                         {Array.isArray(userOrderState) && userOrderState.map((order, index) => (
-                            <>
-                                <div className="row my-3 pt-3" style={{ backgroundColor: "#febd69" }} key={index}>
-                                    <div className="col-3">
-                                        <p>{order._id}</p>
-                                    </div>
-                                    <div className="col-3">
-                                        <p>{order?.totalPrice}</p>
-                                    </div>
-                                    <div className="col-3">
-                                        <p>{order.totalPriceAfterDiscount}</p>
-                                    </div>
-                                    <div className="col-3">
-                                        <p>{order.orderStatus}</p>
-                                    </div>
-                                    <div className="col-12" style={{ backgroundColor: "#232f3e" }}>
-                                        <div className="row pt-3 text-white">
-                                            <div className="col-3">
-                                                <p>Product Name</p>
-                                            </div>
-                                            <div className="col-3">
-                                                <p>Quantity</p>
-                                            </div>
-                                            <div className="col-3">
-                                                <p>Price</p>
-                                            </div>
-                                            <div className="col-3">
-                                                <p>Color</p>
-                                            </div>
-                                            {order.orderItems?.map((product, index) => (
-                                                <>
-                                                    <div className="col-12" key={index}>
-                                                        <div className="row pb-3" >
-                                                            <div className="col-3">
-                                                                <p>{product.product.title}</p>
-                                                            </div>
-                                                            <div className="col-3">
-                                                                <p>{product.quantity}</p>
-                                                            </div>
-                                                            <div className="col-3">
-                                                                <p>{product.price}</p>
-                                                            </div>
-                                                            <div className="col-3">
-                                                                <ul className="colors ps-3">
-                                                                    <li style={{ backgroundColor: product.color.title }}></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </>
-                                            ))}
+                            <div className="row my-3 pt-3" style={{ backgroundColor: "#febd69" }} key={index}>
+                                <div className="col-3">
+                                    <p>{order._id}</p>
+                                </div>
+                                <div className="col-3">
+                                    <p>{order?.totalPrice}</p>
+                                </div>
+                                <div className="col-3">
+                                    <p>{order.totalPriceAfterDiscount}</p>
+                                </div>
+                                <div className="col-3">
+                                    <p>{order.orderStatus}</p>
+                                </div>
+                                <div className="col-12" style={{ backgroundColor: "#232f3e" }}>
+                                    <div className="row pt-3 text-white">
+                                        <div className="col-3">
+                                            <p>Product Name</p>
                                         </div>
+                                        <div className="col-3">
+                                            <p>Quantity</p>
+                                        </div>
+                                        <div className="col-3">
+                                            <p>Price</p>
+                                        </div>
+                                        <div className="col-3">
+                                            <p>Color</p>
+                                        </div>
+                                        {order?.orderItems?.map((product, index) => (
+                                            <div className="col-12" key={index}>
+                                                <div className="row pb-3" >
+                                                    <div className="col-3">
+                                                        <p>{product.product.title}</p>
+                                                    </div>
+                                                    <div className="col-3">
+                                                        <p>{product.quantity}</p>
+                                                    </div>
+                                                    <div className="col-3">
+                                                        <p>{product.price}</p>
+                                                    </div>
+                                                    <div className="col-3">
+                                                        <ul className="colors ps-3">
+                                                            <li style={{ backgroundColor: product.color.title }}></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-                            </>
+                            </div>
                         ))}
                     </div>
                 </div>

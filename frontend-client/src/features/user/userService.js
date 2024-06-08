@@ -122,6 +122,7 @@ const emptyCart = async () => {
         return response.data;
     } catch (error) {
         console.error("Error during empty cart : ", error);
+        throw error;
     }
 };
 
