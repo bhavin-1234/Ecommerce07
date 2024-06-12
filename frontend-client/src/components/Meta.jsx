@@ -1,12 +1,12 @@
 import propTypes from 'prop-types';
 import { Helmet } from "react-helmet";
 
-const Meta = (props) => {
+const Meta = ({title}) => {
     return (
         <>
             <Helmet>
                 <meta charSet="utf-8" />
-                <title>{props.title}</title>
+                <title>{title}</title>
             </Helmet>
         </>
     )

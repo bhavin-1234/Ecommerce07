@@ -13,12 +13,12 @@ const authMiddleware = async (req, res, next) => {
         next();
       }
     } catch (error) {
-      res.json({
+      return res.json({
         message: "Not Authorized or Token expired, Please Login again...",
       });
     }
   } else {
-    res.json({ message: "There is no Token attached to Headers" });
+    res.status(400).json({ message: "There is no Token attached to Headers" });
   }
 };
 

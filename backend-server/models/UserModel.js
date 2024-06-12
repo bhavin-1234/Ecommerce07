@@ -8,24 +8,29 @@ const userSchema = new mongoose.Schema(
     firstname: {
       type: String,
       required: true,
+      trim: true
     },
     lastname: {
       type: String,
       required: true,
+      trim: true
     },
     email: {
       type: String,
       required: true,
       unique: true,
-    },
-    mobile: {
-      type: String,
-      required: true,
-      unique: true,
+      trim: true
+      },
+      mobile: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
     },
     password: {
       type: String,
       required: true,
+      unique: true,
     },
     role: {
       type: String,
@@ -42,6 +47,7 @@ const userSchema = new mongoose.Schema(
     },
     address: {
       type: String,
+      trim: true
     },
     wishlist: [
       {
@@ -51,9 +57,13 @@ const userSchema = new mongoose.Schema(
     ],
     refreshToken: {
       type: String,
+      trim: true
     },
     passwordChangedAt: Date,
-    passwordResetToken: String,
+    passwordResetToken: {
+      type: String,
+      trim: true
+    },
     passwordResetExpires: Date,
   },
   { timestamps: true }
@@ -61,8 +71,12 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    } catch (error) {
+      next(error);
+    }
   }
   next();
 });
@@ -78,7 +92,7 @@ userSchema.methods.createPasswordResetToken = async function () {
     .update(resettoken)
     .digest("hex");
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // next 10 minutes
-  return resettoken;                              
+  return resettoken;
 };
 
 //Export the model

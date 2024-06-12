@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 
-const BreadCrumb = (props) => {
-    const { title } = props;
+const BreadCrumb = ({title}) => {
     return (
         <div className="bradcrumb py-4">
             <div className="container-xxl">

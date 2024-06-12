@@ -22,7 +22,6 @@ const Contact = () => {
     email: "",
     mobile: "",
     comment: "",
-
   };
 
   const validationSchema = Yup.object().shape({

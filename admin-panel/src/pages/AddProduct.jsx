@@ -131,20 +131,15 @@ const AddProduct = () => {
 
     useEffect(() => {
 
-        isSuccess && createProduct && toast.success("Product Added Successfully!", {
-            onClose: () => formik.resetForm()
-        });
+        isSuccess && createProduct && formik.resetForm();
 
-        isSuccess && updatedProduct && toast.success("Product Updated Successfully!", {
-            onClose: () => {
-                formik.resetForm();
-                navigate("/admin/product-list");
-            }
-        });
+        if (isSuccess && updatedProduct) {
+            formik.resetForm();
+            navigate("/admin/product-list");
+        }
 
-        isError && toast.error("Something went wrong!");
 
-    }, [isSuccess, createdProduct, isError, updatedProduct]);
+    }, [isSuccess, createdProduct, updatedProduct]);
 
 
     const handleDeleteImage = async (imageId) => {

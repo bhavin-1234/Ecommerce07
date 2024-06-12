@@ -46,7 +46,7 @@ export const updateOrderStatus = createAsyncThunk("order/update-status", async (
     }
 });
 
-export const getMonthlyOrderData = createAsyncThunk("order/monthly-order-data", async (_, thunkAPI) => {
+export const getMonthlyOrderData = createAsyncThunk("order/monthly-order-data", async (thunkAPI) => {
     try {
         return await authService.getMonthlyOrderData();
     } catch (error) {
@@ -54,7 +54,7 @@ export const getMonthlyOrderData = createAsyncThunk("order/monthly-order-data", 
     }
 });
 
-export const getYearlyOrderData = createAsyncThunk("order/yearly-order-data", async (_, thunkAPI) => {
+export const getYearlyOrderData = createAsyncThunk("order/yearly-order-data", async (thunkAPI) => {
     try {
         return await authService.getYearlyOrderData();
     } catch (error) {

@@ -46,7 +46,7 @@ const Dashboard = () => {
         dispatch(getMonthlyOrderData());
         dispatch(getYearlyOrderData());
         dispatch(getOrders());
-    }, [dispatch]);
+    }, []);
     // const { monthlyData }  = useSelector(state => state.auth);
     const { yearlyData = [], orders = [] } = useSelector(state => state.auth);
     // const [monthWiseIncome, setMonthWiseIncome] = useState(null);
@@ -156,9 +156,9 @@ const Dashboard = () => {
     //     legend: false,
     // };
 
-    if (orders.length === 0 || yearlyData.length === 0) {
-        return <div>Loading...</div>;
-    }
+    // if (orders?.length === 0 || yearlyData?.length === 0) {
+    //     return <div>Loading...</div>;
+    // }
 
     return (
         <div>

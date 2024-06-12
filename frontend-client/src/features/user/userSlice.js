@@ -3,6 +3,8 @@ import { userService } from "./userService";
 import { toast } from "react-toastify";
 
 export const registerUser = createAsyncThunk("auth/register", async (userData, thunkAPI) => {
+    // console.log("uerData: ", userData);
+    // console.log("thunkAPI: ", thunkAPI);
     try {
         return await userService.registerUser(userData);
     } catch (error) {
@@ -144,8 +146,6 @@ export const authSlice = createSlice({
                 state.message = action.error.message;
                 if (state.isError) {
                     toast.error(action.payload.message);
-                    // toast.error(action.payload.message);
-                    // toast.error(action.payload.response.data.message);
                 }
             })
             .addCase(loginUser.pending, (state) => {

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit'
 import productService from '../product/productService';
+import { toast } from 'react-toastify';
 
 export const getProducts = createAsyncThunk("product/get-products", async (_, thunkAPI) => {
     try {
@@ -101,6 +102,9 @@ export const productSlice = createSlice({
                 state.isSuccess = true;
                 state.createdProduct = action.payload;
                 state.message = "success";
+                if (state.isSuccess) {
+                    toast.success("Product Added Succesfully!");
+                }
             })
             .addCase(createProduct.rejected, (state, action) => {
                 state.isLoading = false;
@@ -108,6 +112,9 @@ export const productSlice = createSlice({
                 state.isSuccess = false;
                 // state.createdProduct = null;
                 state.message = action.error;
+                if (state.isError) {
+                    toast.error("Something Went Wrong!");
+                }
             })
             .addCase(updateProduct.pending, (state) => {
                 state.isLoading = true
@@ -118,6 +125,9 @@ export const productSlice = createSlice({
                 state.isSuccess = true;
                 state.updatedProduct = action.payload;
                 state.message = "success";
+                if (state.isSuccess) {
+                    toast.success("Product Updated Succesfully!");
+                }
             })
             .addCase(updateProduct.rejected, (state, action) => {
                 state.isLoading = false;
@@ -125,6 +135,9 @@ export const productSlice = createSlice({
                 state.isSuccess = false;
                 // state.createdProduct = null;
                 state.message = action.error;
+                if (state.isError) {
+                    toast.error("Something Went Wrong!");
+                }
             })
             .addCase(deleteProduct.pending, (state) => {
                 state.isLoading = true

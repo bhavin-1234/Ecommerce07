@@ -2,25 +2,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
-// import OurStore from "./pages/OurStore";
-// import Blog from "./pages/Blog";
-// import CompareProduct from "./pages/CompareProduct";
-// import WishList from "./pages/WishList";
-// import Login from "./pages/Login";
-// import ForgotPassword from "./pages/ForgotPassword";
-// import SignUp from "./pages/SignUp";
-// import ResetPassword from "./pages/ResetPassword";
-// import SingleBlog from "./pages/SingleBlog";
-// import PrivacyPolicy from "./pages/PrivacyPolicy";
-// import RefundPolicy from "./pages/RefundPolicy";
-// import ShippingPolicy from "./pages/ShippingPolicy";
-// import TermsAndCondition from "./pages/TermsAndCondition";
-// import SingleProduct from "./pages/SingleProduct";
-// import Cart from "./pages/Cart";
-// import Checkout from "./pages/Checkout";
-// import Orders from "./pages/Orders";
-// import Profile from "./pages/Profile";
-// import Contact from "./pages/Contact";
+
 import PrivateRoutes from "./routing/PrivateRoutes";
 import AuthenticRoutes from "./routing/AuthenticRoutes";
 
@@ -93,6 +75,27 @@ function App() {
     </>
   );
 }
+
+
+// import OurStore from "./pages/OurStore";
+// import Blog from "./pages/Blog";
+// import CompareProduct from "./pages/CompareProduct";
+// import WishList from "./pages/WishList";
+// import Login from "./pages/Login";
+// import ForgotPassword from "./pages/ForgotPassword";
+// import SignUp from "./pages/SignUp";
+// import ResetPassword from "./pages/ResetPassword";
+// import SingleBlog from "./pages/SingleBlog";
+// import PrivacyPolicy from "./pages/PrivacyPolicy";
+// import RefundPolicy from "./pages/RefundPolicy";
+// import ShippingPolicy from "./pages/ShippingPolicy";
+// import TermsAndCondition from "./pages/TermsAndCondition";
+// import SingleProduct from "./pages/SingleProduct";
+// import Cart from "./pages/Cart";
+// import Checkout from "./pages/Checkout";
+// import Orders from "./pages/Orders";
+// import Profile from "./pages/Profile";
+// import Contact from "./pages/Contact";
 
 // function App() {
 //   return (

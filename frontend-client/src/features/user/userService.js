@@ -6,6 +6,7 @@ const registerUser = async (userData) => {
         return response.data;
     } catch (error) {
         console.error("Error during registering a user: ", error.response.data);
+        // return Promise.reject(error.response.data);
         throw error.response.data;
     }
 };
@@ -13,13 +14,9 @@ const registerUser = async (userData) => {
 const loginUser = async (loginData) => {
     try {
         const response = await axiosInstanceWithoutAuth.post("user/login", loginData);
-        // console.log(response);
-        // localStorage.setItem("digiticToken", JSON.stringify(response.data));
         return response.data;
     } catch (error) {
         console.error("Error during login a user: ", error.response.data);
-        // console.log(error.response.data);
-        // return Promise.reject(error.response.data);
         throw error.response.data;
     }
 };
@@ -39,6 +36,7 @@ const addToCart = async (cartData) => {
         return response.data;
     } catch (error) {
         console.error("Error during adding product to the cart: ", error);
+        throw error.response.data;
     }
 };
 

@@ -12,7 +12,7 @@ const uniqid = require('uniqid');
 const Order = require('../models/orderModel');
 
 // create a user
-const createUser = async (req, res) => {
+exports.createUser = async (req, res) => {
   try {
     const { email } = req.body;
     const findUser = await User.findOne({ email });
@@ -23,30 +23,30 @@ const createUser = async (req, res) => {
     } else {
       //user already exists
       return res
-        .status(400)
+        .status(409)
         .json({ message: 'User already exists!!', success: false });
     }
   } catch (error) {
     console.error('Error while creating a user: ', error);
-    res
-      .status(500)
-      .json({
-        message: 'Internal Server Error!',
-        success: false,
-        error: error.message,
-      });
+    return res.status(500).json({
+      message: 'Internal Server Error!',
+      success: false,
+    });
   }
 };
 
 // login a user
-const loginUser = async (req, res) => {
+exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const findUser = await User.findOne({ email });
+    if (!findUser) {
+      return res.status(404).json({ succes: false, message: "User doen't exist with this Email Id" });
+    }
     if (findUser && (await findUser.isPasswordMatched(password))) {
-      const refreshToken = await generateRefreshToken(findUser?._id);
+      const refreshToken = await generateRefreshToken(findUser._id);
       const updateUser = await User.findByIdAndUpdate(
-        findUser?._id,
+        findUser._id,
         {
           refreshToken,
         },
@@ -59,43 +59,42 @@ const loginUser = async (req, res) => {
         maxAge: 72 * 60 * 60 * 1000,
       });
       return res.json({
-        id: findUser?._id,
-        firstname: findUser?.firstname,
-        lastname: findUser?.lastname,
-        email: findUser?.email,
-        mobile: findUser?.mobile,
-        token: generateToken(findUser?._id),
+        id: findUser._id,
+        firstname: findUser.firstname,
+        lastname: findUser.lastname,
+        email: findUser.email,
+        mobile: findUser.mobile,
+        token: generateToken(findUser._id),
       });
     } else {
       return res
         .status(401)
-        .json({ message: 'Invalid Credential', success: false });
+        .json({ message: 'Incorrect Password!!', success: false });
     }
   } catch (error) {
-    console.error('Error while logging a user: ', error);
-    res
+    console.error('Error while logging in a user: ', error);
+    return res
       .status(500)
       .json({
         message: 'Internal Server Error!',
         success: false,
-        error: error.message,
       });
   }
 };
 
-const loginAdmin = async (req, res) => {
+exports.loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const findAdmin = await User.findOne({ email });
 
-    // if (findAdmin?.role !== 'admin') {
-    //   return res.json({ message: 'Not Authorised!!' });
-    // }
+    if (!findAdmin || findAdmin?.role !== 'admin') {
+      return res.status(401).json({ message: 'Not Authorised!!', succes: "false" });
+    }
 
     if (findAdmin && (await findAdmin.isPasswordMatched(password))) {
-      const refreshToken = await generateRefreshToken(findAdmin?._id);
+      const refreshToken = await generateRefreshToken(findAdmin._id);
       const updateUser = await User.findByIdAndUpdate(
-        findAdmin?._id,
+        findAdmin._id,
         {
           refreshToken,
         },
@@ -108,29 +107,28 @@ const loginAdmin = async (req, res) => {
         maxAge: 72 * 60 * 60 * 1000,
       });
       return res.json({
-        id: findAdmin?._id,
-        firstname: findAdmin?.firstname,
-        lastname: findAdmin?.lastname,
-        email: findAdmin?.email,
-        mobile: findAdmin?.mobile,
-        token: generateToken(findAdmin?._id),
+        id: findAdmin._id,
+        firstname: findAdmin.firstname,
+        lastname: findAdmin.lastname,
+        email: findAdmin.email,
+        mobile: findAdmin.mobile,
+        token: generateToken(findAdmin._id),
       });
     } else {
-      return res.status(400).json({ message: 'Invalid Credential', success: false });
+      return res.status(401).json({ message: 'Incorrect Password!!', success: false });
     }
   } catch (error) {
     console.error('Error while logging a admin: ', error);
-    res
+    return res
       .status(500)
       .json({
         message: 'Internal Server Error!',
         success: false,
-        error: error.message,
       });
   }
 };
 
-const refreshToken = async (req, res) => {
+exports.refreshToken = async (req, res) => {
   const cookies = req.cookies;
   if (!cookies?.refreshToken) {
     return res.json({ message: 'No Refresh Token in Cookies!!' });
@@ -141,17 +139,17 @@ const refreshToken = async (req, res) => {
     return res.json({ message: 'User not matched with Token!!' });
   }
   jwt.verify(refreshToken, process.env.JWT_SECRET_KEY, (err, decoded) => {
-    if (err || user?.id !== decoded.id) {
-      res.json('Something went wrong with refresh token');
+    if (err || user._id !== decoded.id) {
+      return res.json('Something went wrong with refresh token');
     }
     const accessToken = generateToken(user?._id);
-    res.json({ accessToken });
+    return res.json({ accessToken });
   });
 };
 
 // logout functionality
 
-const logout = async (req, res) => {
+exports.logout = async (req, res) => {
   const cookies = req.cookies;
   if (!cookies?.refreshToken) {
     return res.json({ message: 'No Refresh Token in Cookies!!' });
@@ -179,7 +177,7 @@ const logout = async (req, res) => {
 };
 
 // update a user
-const updateAUser = async (req, res) => {
+exports.updateAUser = async (req, res) => {
   const { _id } = req.user;
   try {
     validateMongoDBID(_id);
@@ -199,7 +197,7 @@ const updateAUser = async (req, res) => {
       lastname: updatedUser?.lastname,
       email: updatedUser?.email,
       mobile: updatedUser?.mobile,
-      token: generateToken(updatedUser?._id),
+      // token: generateToken(updatedUser?._id),
     });
   } catch (error) {
     console.error('Error while updating a user:', error);
@@ -208,7 +206,7 @@ const updateAUser = async (req, res) => {
 };
 
 // get all user
-const getAllUser = async (req, res) => {
+exports.getAllUser = async (req, res) => {
   try {
     const allUser = await User.find({});
     res.json(allUser);
@@ -245,7 +243,7 @@ const getAllUser = async (req, res) => {
 // };
 
 // block a user
-const blockUser = async (req, res) => {
+exports.blockUser = async (req, res) => {
   const { id } = req.params;
   try {
     validateMongoDBID(id);
@@ -266,7 +264,7 @@ const blockUser = async (req, res) => {
 };
 
 // unblock a user
-const unblockUser = async (req, res) => {
+exports.unblockUser = async (req, res) => {
   const { id } = req.params;
   try {
     validateMongoDBID(id);
@@ -286,7 +284,7 @@ const unblockUser = async (req, res) => {
   }
 };
 
-const updatePassword = async (req, res) => {
+exports.updatePassword = async (req, res) => {
   const { _id } = req.user;
   const { password } = req.body;
   validateMongoDBID(_id);
@@ -300,7 +298,7 @@ const updatePassword = async (req, res) => {
   }
 };
 
-const forgotPasswordToken = async (req, res) => {
+exports.forgotPasswordToken = async (req, res) => {
   const { email } = req.body;
   console.log(email);
   const user = await User.findOne({ email });
@@ -325,7 +323,7 @@ const forgotPasswordToken = async (req, res) => {
   }
 };
 
-const resetPassword = async (req, res) => {
+exports.resetPassword = async (req, res) => {
   const { password } = req.body;
   const { token } = req.params;
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
@@ -347,7 +345,7 @@ const resetPassword = async (req, res) => {
 
 // save user address
 
-const saveAddress = async (req, res) => {
+exports.saveAddress = async (req, res) => {
   const { _id } = req.user;
   try {
     validateMongoDBID(_id);
@@ -365,7 +363,7 @@ const saveAddress = async (req, res) => {
   }
 };
 
-const getWishList = async (req, res) => {
+exports.getWishList = async (req, res) => {
   const { _id } = req.user;
   try {
     validateMongoDBID(_id);
@@ -377,7 +375,7 @@ const getWishList = async (req, res) => {
   }
 };
 
-const userCart = async (req, res) => {
+exports.userCart = async (req, res) => {
   const { productId, quantity, price, color } = req.body;
   const { _id } = req.user;
   try {
@@ -396,7 +394,7 @@ const userCart = async (req, res) => {
   }
 };
 
-const getUserCart = async (req, res) => {
+exports.getUserCart = async (req, res) => {
   const { _id } = req.user;
   try {
     validateMongoDBID(_id);
@@ -414,7 +412,7 @@ const getUserCart = async (req, res) => {
   }
 };
 
-const removeProductFromCart = async (req, res) => {
+exports.removeProductFromCart = async (req, res) => {
   const { _id } = req.user;
   const { cartItemId } = req.params;
   try {
@@ -431,7 +429,7 @@ const removeProductFromCart = async (req, res) => {
   }
 };
 
-const emptyCart = async (req, res) => {
+exports.emptyCart = async (req, res) => {
   const { _id } = req.user;
   // const { cartItemId } = req.params;
   try {
@@ -445,7 +443,7 @@ const emptyCart = async (req, res) => {
   }
 };
 
-const updateProductQuantityFromCart = async (req, res) => {
+exports.updateProductQuantityFromCart = async (req, res) => {
   const { _id } = req.user;
   const { cartItemId, newQuantity } = req.params;
   try {
@@ -466,7 +464,7 @@ const updateProductQuantityFromCart = async (req, res) => {
   }
 };
 
-const createOrder = async (req, res) => {
+exports.createOrder = async (req, res) => {
   const { _id } = req.user;
   const {
     shippingInfo,
@@ -492,7 +490,7 @@ const createOrder = async (req, res) => {
   }
 };
 
-const getMyOrders = async (req, res) => {
+exports.getMyOrders = async (req, res) => {
   const { _id } = req.user;
   try {
     validateMongoDBID(_id);
@@ -507,7 +505,7 @@ const getMyOrders = async (req, res) => {
   }
 };
 
-const getAllOrders = async (req, res) => {
+exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find({}).populate('user');
     res.json(orders);
@@ -517,7 +515,7 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-const getOrder = async (req, res) => {
+exports.getOrder = async (req, res) => {
   const { id } = req.params;
   try {
     const orders = await Order.findById(id).populate(
@@ -530,7 +528,7 @@ const getOrder = async (req, res) => {
   }
 };
 
-const updateOrderStatus = async (req, res) => {
+exports.updateOrderStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   try {
@@ -547,7 +545,7 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-const getMonthWiseOrderData = async (req, res) => {
+exports.getMonthWiseOrderData = async (req, res) => {
   const monthNames = [
     'January',
     'February',
@@ -632,7 +630,7 @@ const getMonthWiseOrderData = async (req, res) => {
 //   res.json(data);
 // };
 
-const getYearlyTotalOrders = async (req, res) => {
+exports.getYearlyTotalOrders = async (req, res) => {
   const monthNames = [
     'January',
     'February',
@@ -678,36 +676,36 @@ const getYearlyTotalOrders = async (req, res) => {
   res.json(data);
 };
 
-module.exports = {
-  createUser,
-  loginUser,
-  loginAdmin,
-  getAllUser,
-  // getAUser,
-  // deleteAUser,
-  updateAUser,
-  logout,
-  blockUser,
-  unblockUser,
-  refreshToken,
-  updatePassword,
-  forgotPasswordToken,
-  resetPassword,
-  getWishList,
-  saveAddress,
-  userCart,
-  getUserCart,
-  createOrder,
-  removeProductFromCart,
-  updateProductQuantityFromCart,
-  getMyOrders,
-  getMonthWiseOrderData,
-  getYearlyTotalOrders,
-  getAllOrders,
-  getOrder,
-  updateOrderStatus,
-  emptyCart,
-};
+// module.exports = {
+//   createUser,
+//   loginUser,
+//   loginAdmin,
+//   getAllUser,
+//   // getAUser,
+//   // deleteAUser,
+//   updateAUser,
+//   logout,
+//   blockUser,
+//   unblockUser,
+//   refreshToken,
+//   updatePassword,
+//   forgotPasswordToken,
+//   resetPassword,
+//   getWishList,
+//   saveAddress,
+//   userCart,
+//   getUserCart,
+//   createOrder,
+//   removeProductFromCart,
+//   updateProductQuantityFromCart,
+//   getMyOrders,
+//   getMonthWiseOrderData,
+//   getYearlyTotalOrders,
+//   getAllOrders,
+//   getOrder,
+//   updateOrderStatus,
+//   emptyCart,
+// };
 
 // emptyCart,
 // applyCoupon,

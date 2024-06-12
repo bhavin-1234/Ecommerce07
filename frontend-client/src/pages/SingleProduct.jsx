@@ -54,10 +54,12 @@ const SingleProduct = () => {
     const { fetchedProduct, products } = useSelector(state => state.product);
     const { cartProducts } = useSelector(state => state.auth);
 
+    console.log(cartProducts);
+
 
     useEffect(() => {
-        if (cartProducts && productId) {
-            const isInCart = cartProducts?.some(el => el.productId._id === productId);
+        if (Array.isArray(cartProducts) && productId) {
+            const isInCart = cartProducts?.some(el => el.productId?._id === productId);
 
             setIsAlreadyAddedToTheCart(isInCart);
         }
