@@ -71,17 +71,17 @@ const Orders = () => {
                                             <div className="col-12" key={index}>
                                                 <div className="row pb-3" >
                                                     <div className="col-3">
-                                                        <p>{product.product.title}</p>
+                                                        <p>{product?.product?.title}</p>
                                                     </div>
                                                     <div className="col-3">
-                                                        <p>{product.quantity}</p>
+                                                        <p>{product?.quantity}</p>
                                                     </div>
                                                     <div className="col-3">
-                                                        <p>{product.price}</p>
+                                                        <p>{product?.price}</p>
                                                     </div>
                                                     <div className="col-3">
                                                         <ul className="colors ps-3">
-                                                            <li style={{ backgroundColor: product.color.title }}></li>
+                                                            <li style={{ backgroundColor: product?.color?.title }}></li>
                                                         </ul>
                                                     </div>
                                                 </div>
