@@ -1,5 +1,5 @@
 const Enquiry = require("../models/enqModel");
-const { validateMongoDBID } = require("../utils/validatemongoDBID");
+const { validateMongoDBID } = require("../utils/validateMongoDBID");
 
 const createEnquiry = async (req, res) => {
   try {

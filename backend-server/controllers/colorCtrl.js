@@ -1,5 +1,5 @@
 const Color = require("../models/colorModel");
-const { validateMongoDBID } = require("../utils/validatemongoDBID");
+const { validateMongoDBID } = require("../utils/validateMongoDBID");
 
 const createColor = async (req, res) => {
   try {

@@ -1,5 +1,5 @@
 const Brand = require("../models/brandModel.js");
-const { validateMongoDBID } = require("../utils/validatemongoDBID");
+const { validateMongoDBID } = require("../utils/validateMongoDBID");
 
 const createBrand = async (req, res) => {
     try {
