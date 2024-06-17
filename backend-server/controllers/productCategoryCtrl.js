@@ -1,5 +1,5 @@
 const Category = require("../models/productCategoryModel");
-const { validateMongoDBID } = require("../utils/validatemongoDBID");
+const { validateMongoDBID } = require("../utils/validateMongoDBID");
 
 const createCategory = async (req, res) => {
     try {
