@@ -1,5 +1,5 @@
 const Category = require("../models/blogCategoryModel.js");
-const { validateMongoDBID } = require("../utils/validatemongodbid.js");
+const { validateMongoDBID } = require("../utils/validateMongoDBID.js");
 
 const createCategory = async (req, res) => {
     try {
