@@ -48,10 +48,10 @@ const App = () => {
 
       <Router>
         <Routes>
-          <Route path="/" element={<AuthenticRoutes><LogIn /></AuthenticRoutes>} />
+          <Route path="/login" element={<AuthenticRoutes><LogIn /></AuthenticRoutes>} />
           {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
           {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
-          <Route path="/admin" element={<PrivateRoutes><MainLayout /></PrivateRoutes>}>
+          <Route path="/" element={<PrivateRoutes><MainLayout /></PrivateRoutes>}>
             <Route index element={<Dashboard />} />
             <Route path="enquiries" element={<Enquiry />} />
             <Route path="enquiries/:id" element={<ViewEnquiry />} />

@@ -5,7 +5,7 @@ import propTypes from "prop-types";
 const PrivateRoutes = ({ children }) => {
 
     const getTokenFromLocaltorage = (JSON.parse(localStorage.getItem("user")))?.token;
-    return getTokenFromLocaltorage !== undefined ? children : <Navigate to="/" />;
+    return getTokenFromLocaltorage !== undefined ? children : <Navigate to="/login" />;
 };
 
 PrivateRoutes.propTypes = {
