@@ -19,10 +19,10 @@ const cors = require("cors");
 
 app.use(morgan("dev"));
 app.use(cors());
-// app.use(cors({
-//     origin: [""],
-//     credentials: true
-// }));
+app.use(cors({
+    origin: "https://digitic-admin-panel.vercel.app",
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
