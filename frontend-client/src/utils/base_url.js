@@ -1,1 +1,1 @@
-export const base_url = "digitic-backend-eight.vercel.app/api/";
+export const base_url = "http//digitic-backend-eight.vercel.app/api/";
