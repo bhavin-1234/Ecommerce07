@@ -18,7 +18,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 
 app.use(morgan("dev"));
-app.use(cors());
+// app.use(cors());
 app.use(cors({
     origin: "https://digitic-admin-panel.vercel.app",
     credentials: true
