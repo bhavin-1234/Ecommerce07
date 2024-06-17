@@ -20,7 +20,7 @@ const cors = require("cors");
 app.use(morgan("dev"));
 // app.use(cors());
 app.use(cors({
-    origin: "https://digitic-admin-panel.vercel.app",
+    origin: ["https://digitic-admin-panel.vercel.app", "https://digitic-frontend-sepia.vercel.app"],
     credentials: true
 }));
 app.use(express.json());
